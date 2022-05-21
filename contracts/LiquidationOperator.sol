@@ -131,12 +131,23 @@ interface IUniswapV2Pair {
 }
 
 // ----------------------IMPLEMENTATION------------------------------
+//Shymaa fork code embedding starts from here
 
-contract LiquidationOperator is IUniswapV2Callee {
+
+//Shymaa fork code embedding starts from here
+
+    contract LiquidationOperator is IUniswapV2Callee {
     uint8 public constant health_factor_decimals = 18;
 
     // TODO: define constants used in the contract including ERC-20 tokens, Uniswap Pairs, Aave lending pools, etc. */
-    //    *** Your code here ***
+    address payable owner;
+    address ETH_TOKEN_ADDRESS = address(0x0);
+    
+    address wbtcAddress = address(0x2260fac5e5542a773aa44fbcfedf7c193bc2c599);
+    ERC20 wbtcToken = ERC20(wethAddress);
+    address contractAddress = address(0xb7990f251451a89728eb2aa7b0a529f51d127478);
+    address usdtAddress = address(0xdac17f958d2ee523a2206206994597c13d831ec7);
+    ERC20 usdtToken = ERC20(usdtAddress);
     // END TODO
 
     // some helper function, it is totally fine if you can finish the lab without using these function
@@ -177,14 +188,17 @@ contract LiquidationOperator is IUniswapV2Callee {
         amountIn = (numerator / denominator) + 1;
     }
 
+
     constructor() {
         // TODO: (optional) initialize your contract
         //   *** Your code here ***
+       // owner = msg.sender;
         // END TODO
     }
 
     // TODO: add a `receive` function so that you can withdraw your WETH
     //   *** Your code here ***
+    receive() external payable {}
     // END TODO
 
     // required by the testing script, entry for your liquidation call
@@ -196,13 +210,26 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         // 1. get the target user account data & make sure it is liquidatable
         //    *** Your code here ***
+        address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
+        position = ILendingPool.getUserAccountData(user_account);
+        bool liquitable = (position.healthFactor < 1);
 
+        uint256 repay1=(position.totalDebtETH)*(position.ltv-1)/(1.066*position.currentLiquidationThreshold-1);
+        //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
+        
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
         // we know that the target user borrowed USDT with WBTC as collateral
         // we should borrow USDT, liquidate the target user and get the WBTC, then swap WBTC to repay uniswap
         // (please feel free to develop other workflows as long as they liquidate the target user successfully)
         //    *** Your code here ***
+
+        address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
+        if (liquitable){
+            uniswapV2Call(usdt_wbtc_pair,(0.6* position.totalDebthETH), 0, data);
+        //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
+        }
+
 
         // 3. Convert the profit into ETH and send back to sender
         //    *** Your code here ***
@@ -222,15 +249,46 @@ contract LiquidationOperator is IUniswapV2Callee {
         // 2.0. security checks and initializing variables
         //    *** Your code here ***
 
+        address token0 = IUniswapV2Pair(msg.sender).token0(); // fetch the address of token0
+        address token1 = IUniswapV2Pair(msg.sender).token1(); // fetch the address of token1
+        assert(msg.sender == IUniswapV2Factory(factoryV2).getPair(token0, token1)); // ensure that msg.sender is a V2 pair
+        
+        // rest of the function goes here!
         // 2.1 liquidate the target user
         //    *** Your code here ***
-
+        ILendingPool.liquidationCall(token0, token1, address(this), uint(-1), false); //changed from Aave to -1 limit 
+        
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
-
+        /* //code for 1 liquidation
+        unit amountRequired = getAmountIn(sender, token0, token1);
+        IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
         // 2.3 repay
         //    *** Your code here ***
+        IERC20.approve(sender, amountRequired);
+        IERC20.transfer(sender, amountRequired);
+        // END TODO*/
         
-        // END TODO
+ //This is to do 2 liquidation steps
+        ILendingPool.liquidationCall(token0, token1, address(this), repay1, false); //changed from Aave to -1 limit 
+        
+        // 2.2 swap WBTC for other things or repay directly
+        unit amountRequired = getAmountIn(sender, token0, token1);
+        IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
+        // 2.3 repay
+        IERC20.approve(sender, amountRequired);
+        IERC20.transfer(sender, amountRequired);
+        
+//now 2nd liquidation
+        ILendingPool.liquidationCall(token0, token1, address(this), uint(-1), false); //changed from Aave to -1 limit 
+       
+        // 2.2 swap WBTC for other things or repay directly
+        unit amountRequired = getAmountIn(sender, token0, token1);
+        IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
+        // 2.3 repay
+        IERC20.approve(sender, amountRequired);
+        IERC20.transfer(sender, amountRequired);
+
     }
 }
+    
