@@ -283,11 +283,11 @@ interface IUniswapV2Pair {
         ILendingPool.liquidationCall(token0, token1, address(this), uint(-1), false); //changed from Aave to -1 limit 
        
         // 2.2 swap WBTC for other things or repay directly
-        unit amountRequired = getAmountIn(sender, token0, token1);
-        IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
+        unit amountRequired2 = getAmountIn(sender, token0, token1);
+        IUniswapV2Pair.swap(amount0Out, amountRequired2, address (this), data);
         // 2.3 repay
-        IERC20.approve(sender, amountRequired);
-        IERC20.transfer(sender, amountRequired);
+        IERC20.approve(sender, amountRequired2);
+        IERC20.transfer(sender, amountRequired2);
 
     }
 }
