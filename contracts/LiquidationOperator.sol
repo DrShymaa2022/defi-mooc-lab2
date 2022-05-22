@@ -49,6 +49,15 @@ interface ILendingPool {
             uint256 ltv,
             uint256 healthFactor
         );
+        
+        typedef struct posn {
+            uint256 totalCollateralETH;
+            uint256 totalDebtETH;
+            uint256 availableBorrowsETH;
+            uint256 currentLiquidationThreshold;
+            uint256 ltv;
+            uint256 healthFactor;
+            };
 }
 
 // UniswapV2
@@ -211,7 +220,7 @@ interface IUniswapV2Pair {
         // 1. get the target user account data & make sure it is liquidatable
         //    *** Your code here ***
         address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
-        position = ILendingPool.getUserAccountData(user_account);
+        posn position = ILendingPool.getUserAccountData(user_account);
         bool liquitable = (position.healthFactor < 1);
 
         uint256 repay1=(position.totalDebtETH)*(position.ltv-1)/(1.066*position.currentLiquidationThreshold-1);
@@ -273,7 +282,7 @@ interface IUniswapV2Pair {
         ILendingPool.liquidationCall(token0, token1, address(this), repay1, false); //changed from Aave to -1 limit 
         
         // 2.2 swap WBTC for other things or repay directly
-        unit amountRequired = getAmountIn(sender, token0, token1);
+        uint256 amountRequired = getAmountIn(sender, token0, token1);
         IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
         // 2.3 repay
         IERC20.approve(sender, amountRequired);
@@ -283,7 +292,7 @@ interface IUniswapV2Pair {
         ILendingPool.liquidationCall(token0, token1, address(this), uint(-1), false); //changed from Aave to -1 limit 
        
         // 2.2 swap WBTC for other things or repay directly
-        unit amountRequired2 = getAmountIn(sender, token0, token1);
+        uint256 amountRequired2 = getAmountIn(sender, token0, token1);
         IUniswapV2Pair.swap(amount0Out, amountRequired2, address (this), data);
         // 2.3 repay
         IERC20.approve(sender, amountRequired2);
