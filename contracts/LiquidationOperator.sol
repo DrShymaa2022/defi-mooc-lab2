@@ -50,7 +50,7 @@ interface ILendingPool {
             uint256 healthFactor
         );
         
-        typedef struct posn {
+        struct posn {
             uint256 totalCollateralETH;
             uint256 totalDebtETH;
             uint256 availableBorrowsETH;
