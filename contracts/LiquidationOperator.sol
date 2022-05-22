@@ -144,10 +144,10 @@ interface IUniswapV2Pair {
     address ETH_TOKEN_ADDRESS = address(0x0);
     
     address wbtcAddress = address(0x2260fac5e5542a773aa44fbcfedf7c193bc2c599);
-    IERC20 wbtcToken = ERC20(wethAddress);
+    IERC20 wbtcToken = IERC20(wbtcAddress);
     address contractAddress = address(0xb7990f251451a89728eb2aa7b0a529f51d127478);
     address usdtAddress = address(0xdac17f958d2ee523a2206206994597c13d831ec7);
-    IERC20 usdtToken = ERC20(usdtAddress);
+    IERC20 usdtToken = IERC20(usdtAddress);
     // END TODO
 
     // some helper function, it is totally fine if you can finish the lab without using these function
