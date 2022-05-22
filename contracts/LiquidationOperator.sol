@@ -59,7 +59,7 @@ interface ILendingPool {
             uint256 ltv;
             uint256 healthFactor;
             }
-        posn position=posn(1,2,3,4,5,6);
+        //posn position=posn(1,2,3,4,5,6);
 //}
 
 // UniswapV2
@@ -225,7 +225,7 @@ interface IUniswapV2Pair {
         //    *** Your code here ***
         address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
        
-        position = ILendingPool.getUserAccountData(user_account);
+        posn position = ILendingPool.getUserAccountData(user_account);
         bool liquitable = (position.healthFactor < 1);
 
         uint256 repay1=(position.totalDebtETH)*(position.ltv-1)/(1.066*position.currentLiquidationThreshold-1);
