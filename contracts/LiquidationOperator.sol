@@ -229,6 +229,13 @@ interface IUniswapV2Pair {
 
         uint256 repay1=(position.totalDebtETH)*(position.ltv-1)/(1.066*position.currentLiquidationThreshold-1);
         //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
+        //checkpoint through printing
+        console.log("if we reached here then it is liquidatable and let's print position values");
+        console.log("The total debt is %s", position.totalDebtETH);
+        console.log("Liquidation Threshold = %s", position.currentLiquidationThreshold);
+        console.log("LTV= %s", position.ltv);
+        console.log("Health factor should be less than1 = %s", position.healthFactor);
+        console.log("Now repay should equal %s", repay1);
         
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -240,7 +247,7 @@ interface IUniswapV2Pair {
        address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
         if (liquitable){
             bytes data;
-            uniswapV2Call(usdt_wbtc_pair,uint(0.6* position.totalDebthETH), 0, data); 
+            uniswapV2Call(usdt_wbtc_pair,uint256(0.6* position.totalDebthETH), 0, data); 
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
 
@@ -250,7 +257,7 @@ interface IUniswapV2Pair {
 
         // END TODO
     }
-
+/*
     // required by the swap
     function uniswapV2Call(
         address,
@@ -259,12 +266,7 @@ interface IUniswapV2Pair {
         bytes calldata
     ) external override {
         // TODO: implement your liquidation logic
-        /*address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
-       bytes data;
-       if (liquitable){
-            uniswapV2Call(usdt_wbtc_pair,(0.6* position.totalDebthETH), 0, data); */
-        //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
-
+      
         // 2.0. security checks and initializing variables
         //    *** Your code here ***
 
@@ -311,3 +313,4 @@ interface IUniswapV2Pair {
     }
 }
     
+*/
