@@ -224,6 +224,7 @@ interface IUniswapV2Pair {
         // 1. get the target user account data & make sure it is liquidatable
         //    *** Your code here ***
         address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
+        posn position;
         position = ILendingPool.getUserAccountData(user_account);
         bool liquitable = (position.healthFactor < 1);
 
@@ -246,7 +247,7 @@ interface IUniswapV2Pair {
 
        address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
         if (liquitable){
-            bytes data;
+           // bytes data;
             //uniswapV2Call(usdt_wbtc_pair,uint256(0.6* position.totalDebthETH), 0, data); 
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
