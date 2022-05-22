@@ -310,7 +310,5 @@ interface IUniswapV2Pair {
         IERC20.approve(sender, amountRequired2);
         IERC20.transfer(sender, amountRequired2);
 
-    }
+    } */
 }
-    
-*/
