@@ -225,8 +225,13 @@ interface IUniswapV2Pair {
         //    *** Your code here ***
         address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
        
-        
-        (,,,,,healthFactor) = ILendingPool.getUserAccountData(user_account);
+            uint256 totalCollateralETH;
+            uint256 totalDebtETH;
+            uint256 availableBorrowsETH;
+            uint256 currentLiquidationThreshold;
+            uint256 ltv;
+            uint256 healthFactor;
+        (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = ILendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1);
 
         uint256 repay1=(totalDebtETH)*(ltv-1)/(1.066*currentLiquidationThreshold-1);
