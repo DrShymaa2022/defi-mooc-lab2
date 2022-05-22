@@ -225,18 +225,18 @@ interface IUniswapV2Pair {
         //    *** Your code here ***
         address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
        
-        posn position=posn(1,2,3,4,5,6);
-        position = ILendingPool.getUserAccountData(user_account);
-        bool liquitable = (position.healthFactor < 1);
+        
+        (,,,,,healthFactor) = ILendingPool.getUserAccountData(user_account);
+        bool liquitable = (healthFactor < 1);
 
-        uint256 repay1=(position.totalDebtETH)*(position.ltv-1)/(1.066*position.currentLiquidationThreshold-1);
+        uint256 repay1=(totalDebtETH)*(ltv-1)/(1.066*currentLiquidationThreshold-1);
         //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
         //checkpoint through printing
         console.log("if we reached here then it is liquidatable and let's print position values");
-        console.log("The total debt is %s", position.totalDebtETH);
-        console.log("Liquidation Threshold = %s", position.currentLiquidationThreshold);
-        console.log("LTV= %s", position.ltv);
-        console.log("Health factor should be less than1 = %s", position.healthFactor);
+        console.log("The total debt is %s", totalDebtETH);
+        console.log("Liquidation Threshold = %s", currentLiquidationThreshold);
+        console.log("LTV= %s", ltv);
+        console.log("Health factor should be less than1 = %s", healthFactor);
         console.log("Now repay should equal %s", repay1);
         
         // 2. call flash swap to liquidate the target user
