@@ -235,9 +235,9 @@ interface IUniswapV2Pair {
         // (please feel free to develop other workflows as long as they liquidate the target user successfully)
         //    *** Your code here ***
 
-        address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
+       /* address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
         if (liquitable){
-            uniswapV2Call(usdt_wbtc_pair,(0.6* position.totalDebthETH), 0, data);
+            uniswapV2Call(usdt_wbtc_pair,(0.6* position.totalDebthETH), 0, data); */
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
 
@@ -256,6 +256,11 @@ interface IUniswapV2Pair {
         bytes calldata
     ) external override {
         // TODO: implement your liquidation logic
+        address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
+       bytes data;
+       if (liquitable){
+            uniswapV2Call(usdt_wbtc_pair,(0.6* position.totalDebthETH), 0, data);
+        //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
 
         // 2.0. security checks and initializing variables
         //    *** Your code here ***
