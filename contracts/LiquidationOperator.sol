@@ -155,10 +155,12 @@ interface IUniswapV2Pair {
     address ETH_TOKEN_ADDRESS = address(0x0);
     
     address wbtcAddress = address(0x2260fac5e5542a773aa44fbcfedf7c193bc2c599);
-    IERC20 wbtcToken = IERC20(wbtcAddress);
+    address wbtcToken = wbtcAddress;
+    //IERC20 wbtcToken = IERC20(wbtcAddress);
     address contractAddress = address(0xb7990f251451a89728eb2aa7b0a529f51d127478);
     address usdtAddress = address(0xdac17f958d2ee523a2206206994597c13d831ec7);
-    IERC20 usdtToken = IERC20(usdtAddress);
+    address usdtToken = usdtAddress;
+    //IERC20 usdtToken = IERC20(usdtAddress);
     // END TODO
 
     // some helper function, it is totally fine if you can finish the lab without using these function
@@ -235,9 +237,10 @@ interface IUniswapV2Pair {
         // (please feel free to develop other workflows as long as they liquidate the target user successfully)
         //    *** Your code here ***
 
-       /* address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
+       address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
         if (liquitable){
-            uniswapV2Call(usdt_wbtc_pair,(0.6* position.totalDebthETH), 0, data); */
+            bytes data;
+            uniswapV2Call(usdt_wbtc_pair,uint(0.6* position.totalDebthETH), 0, data); 
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
 
@@ -256,10 +259,10 @@ interface IUniswapV2Pair {
         bytes calldata
     ) external override {
         // TODO: implement your liquidation logic
-        address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
+        /*address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
        bytes data;
        if (liquitable){
-            uniswapV2Call(usdt_wbtc_pair,(0.6* position.totalDebthETH), 0, data);
+            uniswapV2Call(usdt_wbtc_pair,(0.6* position.totalDebthETH), 0, data); */
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
 
         // 2.0. security checks and initializing variables
