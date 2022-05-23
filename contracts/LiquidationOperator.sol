@@ -201,7 +201,7 @@ interface IUniswapV2Pair {
         // TODO: (optional) initialize your contract
         //   *** Your code here ***
         lendingPool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
-        factory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
+        uniswapFactory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
        // owner = msg.sender;
         // END TODO
     }
@@ -242,7 +242,7 @@ interface IUniswapV2Pair {
         console.log("Health factor should be less than1 = %s", healthFactor);
         console.log(" repay d= %s", repay1);
         console.log(" repay n= %s", repay2);
-        repay1=uint256(repay1/reapay2);
+        repay1=uint256(repay1/repay2);
         //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
         console.log("Now repay should equal %s", repay1);
 
