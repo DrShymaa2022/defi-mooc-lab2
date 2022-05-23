@@ -260,7 +260,7 @@ interface IUniswapV2Pair {
        address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
         if (liquitable){
            // bytes data;
-            //uniswapV2Call(usdt_wbtc_pair,uint256(0.6* position.totalDebthETH), 0, data); 
+            uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebthETH), 0, ); 
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
 
