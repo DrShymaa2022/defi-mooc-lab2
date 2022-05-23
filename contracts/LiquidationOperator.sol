@@ -51,16 +51,7 @@ interface ILendingPool {
         );
 }
         
-        struct posn {
-            uint256 totalCollateralETH;
-            uint256 totalDebtETH;
-            uint256 availableBorrowsETH;
-            uint256 currentLiquidationThreshold;
-            uint256 ltv;
-            uint256 healthFactor;
-            }
-        
-//}
+       
 
 // UniswapV2
 
@@ -154,13 +145,18 @@ interface IUniswapV2Pair {
     address payable owner;
     address ETH_TOKEN_ADDRESS = address(0x0);
     
-    address wbtcAddress = address(0x2260fac5e5542a773aa44fbcfedf7c193bc2c599);
+    address wbtcAddress = address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
     address wbtcToken = wbtcAddress;
     //IERC20 wbtcToken = IERC20(wbtcAddress);
-    address contractAddress = address(0xb7990f251451a89728eb2aa7b0a529f51d127478);
-    address usdtAddress = address(0xdac17f958d2ee523a2206206994597c13d831ec7);
+    address contractAddress = address(0xB7990F251451a89728EB2aa7b0a529f51d127478); // corrected according to checksum 0xB7990F251451a89728EB2aa7b0a529f51d127478
+    address usdtAddress = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
     address usdtToken = usdtAddress;
     //IERC20 usdtToken = IERC20(usdtAddress);
+    address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
+    //this is from the assignment 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F
+          
+    ILendingPool lendingPool;
+    IUniswapV2Factory uniswapFactory;      
     // END TODO
 
     // some helper function, it is totally fine if you can finish the lab without using these function
@@ -201,10 +197,11 @@ interface IUniswapV2Pair {
         amountIn = (numerator / denominator) + 1;
     }
 
-
-    constructor() {
+        constructor() {
         // TODO: (optional) initialize your contract
         //   *** Your code here ***
+        lendingPool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
+        factory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
        // owner = msg.sender;
         // END TODO
     }
@@ -223,26 +220,32 @@ interface IUniswapV2Pair {
 
         // 1. get the target user account data & make sure it is liquidatable
         //    *** Your code here ***
-        address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
-       
+        
             uint256 totalCollateralETH;
             uint256 totalDebtETH;
             uint256 availableBorrowsETH;
             uint256 currentLiquidationThreshold;
             uint256 ltv;
             uint256 healthFactor;
-        (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = ILendingPool.getUserAccountData(user_account);
+        (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1);
 
-        uint256 repay1=(totalDebtETH)*(ltv-1)/(1.066*currentLiquidationThreshold-1);
+        uint256 repay1=(totalDebtETH)*(ltv-1);
+        uint256 repay2=uint256(1.066*currentLiquidationThreshold-1);
         //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
+        
         //checkpoint through printing
         console.log("if we reached here then it is liquidatable and let's print position values");
         console.log("The total debt is %s", totalDebtETH);
         console.log("Liquidation Threshold = %s", currentLiquidationThreshold);
         console.log("LTV= %s", ltv);
         console.log("Health factor should be less than1 = %s", healthFactor);
+        console.log(" repay d= %s", repay1);
+        console.log(" repay n= %s", repay2);
+        repay1=uint256(repay1/reapay2);
+        //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
         console.log("Now repay should equal %s", repay1);
+
         
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
