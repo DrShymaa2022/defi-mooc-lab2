@@ -231,7 +231,8 @@ interface IUniswapV2Pair {
         bool liquitable = (healthFactor < 1);
 
         uint256 repay1=(totalDebtETH)*(ltv-1);
-        uint256 repay2=uint256(1.066*currentLiquidationThreshold-1);
+        uint256 repay2=1066*currentLiquidationThreshold-1000;
+        repay2=repay2/1000;
         //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
         
         //checkpoint through printing
@@ -254,7 +255,7 @@ interface IUniswapV2Pair {
         // (please feel free to develop other workflows as long as they liquidate the target user successfully)
         //    *** Your code here ***
 
-       address usdt_wbtc_pair = IUniswapV2Factory.getPair(usdtToken, wbtcToken);
+       address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
         if (liquitable){
            // bytes data;
             //uniswapV2Call(usdt_wbtc_pair,uint256(0.6* position.totalDebthETH), 0, data); 
