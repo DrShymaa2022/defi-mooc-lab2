@@ -138,8 +138,9 @@ interface IUniswapV2Pair {
 
 //Shymaa fork code embedding starts from here
 
-    contract LiquidationOperator is IUniswapV2Callee {
-   // {
+    contract LiquidationOperator 
+    //is IUniswapV2Callee {
+    {
     uint8 public constant health_factor_decimals = 18;
 
     // TODO: define constants used in the contract including ERC-20 tokens, Uniswap Pairs, Aave lending pools, etc. */
@@ -259,7 +260,7 @@ interface IUniswapV2Pair {
        address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
         if (liquitable){
            bytes memory data;
-            uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebtETH), 0, data); 
+           // uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebtETH), 0, data); 
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
 
