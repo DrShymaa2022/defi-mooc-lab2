@@ -4,4 +4,4 @@ WORKDIR /lab2
 
 COPY . .
 
-RUN npm install --save next-absolute-URL
+RUN npm install
