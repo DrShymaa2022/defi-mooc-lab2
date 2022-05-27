@@ -157,10 +157,10 @@ interface IUniswapV2Pair {
     address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
     //this is from the assignment 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F
           
-    // ILendingPool lendingPool;
+    ILendingPool lendingPool;
     /// Retrieve LendingPool address
-    LendingPoolAddressesProvider provider = LendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8)); // mainnet address, for other addresses: https://docs.aave.com/developers/deployed-contracts/deployed-contract-instances 
-    LendingPool lendingPool = LendingPool(provider.getLendingPool());
+    ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8)); // mainnet address, for other addresses: https://docs.aave.com/developers/deployed-contracts/deployed-contract-instances 
+    ILendingPool lendingPool_Provider = ILendingPool(provider.getLendingPool());
     IUniswapV2Factory uniswapFactory;   
     //these constant addresses are said to be from uniswap documentation in the flashloan defi by example file
     // Uniswap V2 router
