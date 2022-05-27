@@ -16,7 +16,7 @@ describe("Liquidation", function () {
           }
         }]
       });
-    
+    console.log("did we reach here?");
     const gasPrice = 0;
 
     const accounts = await ethers.getSigners();
