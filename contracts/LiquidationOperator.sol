@@ -245,15 +245,15 @@ interface IUniswapV2Pair {
         
         //checkpoint through printing
         console.log("if we reached here then it is liquidatable and let's print position values");
-        console.log("The total debt is %s", totalDebtETH);
-        console.log("Liquidation Threshold = %s", currentLiquidationThreshold);
-        console.log("LTV= %s", ltv);
-        console.log("Health factor should be less than1 = %s", healthFactor);
-        console.log(" repay d= %s", repay1);
-        console.log(" repay n= %s", repay2);
+        emit Log("The total debt is", totalDebtETH);
+        console.log("Liquidation Threshold = %d", currentLiquidationThreshold);
+        emit Log("LTV=", ltv);
+        emit Log("Health factor should be less than1 = ", healthFactor);
+        emit Log(" repay d= ", repay1);
+        emit Log(" repay n= ", repay2);
         repay1=uint256(repay1/repay2);
         //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
-        console.log("Now repay should equal %s", repay1);
+        console.log("Now repay should equal %d", repay1);
 
         
         // 2. call flash swap to liquidate the target user
@@ -266,7 +266,10 @@ interface IUniswapV2Pair {
        address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
         if (liquitable){
            bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
-           // uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebtETH), 0, data); 
+           // uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebtETH), 0, data);
+           //should get the flashloan value in btc like the value locked, I think?
+           uint value =0.7*totalDebtETH*3000000;
+           IUniswapV2Pair(usdt_wbtc_pair).swap(amount0Out, 0, address(this), data);
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
 
