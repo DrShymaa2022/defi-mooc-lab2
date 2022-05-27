@@ -51,7 +51,11 @@ interface ILendingPool {
         );
 }
         
-       
+        // interface for lending pool address provider
+ interface ILendingPoolAddressesProvider {
+    function getLendingPool() external view returns (address);
+    function getLendingPoolCore() external view returns (address payable);
+}      
 
 // UniswapV2
 
