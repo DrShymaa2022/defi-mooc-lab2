@@ -50,12 +50,11 @@ interface ILendingPool {
             uint256 healthFactor
         );
 }
-        
-        // interface for lending pool address provider
- interface ILendingPoolAddressesProvider {
+
+interface ILendingPoolAddressesProvider {
     function getLendingPool() external view returns (address);
     function getLendingPoolCore() external view returns (address payable);
-}      
+}
 
 // UniswapV2
 
@@ -136,43 +135,47 @@ interface IUniswapV2Pair {
         );
 }
 
+// Found at https://docs.uniswap.org/protocol/V2/reference/smart-contracts/router-02
+interface IUniswapV2Router02 {
+    function WETH () external returns (address);
+
+    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts);
+    function swapTokensForExactTokens(
+        uint amountOut,
+        uint amountInMax,
+        address[] calldata path,
+        address to,
+        uint deadline
+    ) external returns (uint[] memory amounts);
+}
+
 // ----------------------IMPLEMENTATION------------------------------
-//Shymaa fork code embedding starts from here
 
-
-//Shymaa fork code embedding starts from here
-
-    contract LiquidationOperator 
-    //is IUniswapV2Callee {
-    {
+contract LiquidationOperator is IUniswapV2Callee {
     uint8 public constant health_factor_decimals = 18;
 
-    // TODO: define constants used in the contract including ERC-20 tokens, Uniswap Pairs, Aave lending pools, etc. */
-    address payable owner;
-    address ETH_TOKEN_ADDRESS = address(0x0);
+    // define constants used in the contract including ERC-20 tokens, Uniswap Pairs, Aave lending pools, etc. */
+    address target_address = 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F; // loan of USDT collateralized with WBTC
+    address loaner_address = 0xa61e59faC455EED933405ecDde9928982B478CE7;
+    uint64 block_number = 1621761058;
+
+    address me = address(this);
     
-    address wbtcAddress = address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
-    address wbtcToken = wbtcAddress;
-    //IERC20 wbtcToken = IERC20(wbtcAddress);
-    address contractAddress = address(0xB7990F251451a89728EB2aa7b0a529f51d127478); // corrected according to checksum 0xB7990F251451a89728EB2aa7b0a529f51d127478
-    address usdtAddress = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
-    address usdtToken = usdtAddress;
-    //IERC20 usdtToken = IERC20(usdtAddress);
-    address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
-    //this is from the assignment 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F
-          
-    ILendingPool lendingPool;
-    /// Retrieve LendingPool address
-    ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8)); // mainnet address, for other addresses: https://docs.aave.com/developers/deployed-contracts/deployed-contract-instances 
-    ILendingPool lendingPool_Provider = ILendingPool(provider.getLendingPool());
-    IUniswapV2Factory uniswapFactory;   
-    //these constant addresses are said to be from uniswap documentation in the flashloan defi by example file
-    // Uniswap V2 router
-    // 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
-    address private constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-    // Uniswap V2 factory
-    address private constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
-    // END TODO
+    // mainnet address, for other addresses: https://docs.aave.com/developers/developing-on-aave/deployed-contract-instances
+    ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8));     
+    ILendingPool lending_pool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
+    ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
+    IUniswapV2Router02 uniswap_router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+
+
+    address USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
+    address WBTC = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
+    address WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+
+    IUniswapV2Factory uni_factory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
+    IUniswapV2Factory sushi_factory = IUniswapV2Factory(0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac);
+    IUniswapV2Pair weth_usdt_uniswap = IUniswapV2Pair(uni_factory.getPair(WETH, USDT));
+    IUniswapV2Pair weth_wbtc_sushiswap = IUniswapV2Pair(sushi_factory.getPair(WETH, WBTC));
 
     // some helper function, it is totally fine if you can finish the lab without using these function
     // https://github.com/Uniswap/v2-periphery/blob/master/contracts/libraries/UniswapV2Library.sol
@@ -212,136 +215,111 @@ interface IUniswapV2Pair {
         amountIn = (numerator / denominator) + 1;
     }
 
-        constructor() {
+    constructor() {
         // TODO: (optional) initialize your contract
         //   *** Your code here ***
-        lendingPool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
-       // lendingPool = ILendingPool(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
-        uniswapFactory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
-       // owner = msg.sender;
         // END TODO
     }
 
-    // TODO: add a `receive` function so that you can withdraw your WETH
-    //   *** Your code here ***
+    // add a `receive` function so that you can withdraw your WETH
     receive() external payable {}
-    // END TODO
 
     // required by the testing script, entry for your liquidation call
     function operate() external {
-        // TODO: implement your liquidation logic
+        // implement your liquidation logic
 
         // 0. security checks and initializing variables
         //    *** Your code here ***
 
         // 1. get the target user account data & make sure it is liquidatable
-        //    *** Your code here ***
-        
-            uint256 totalCollateralETH;
-            uint256 totalDebtETH;
-            uint256 availableBorrowsETH;
-            uint256 currentLiquidationThreshold;
-            uint256 ltv;
-            uint256 healthFactor;
-        (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
-        bool liquitable = (healthFactor < 1);
 
-        uint256 repay1=(totalDebtETH)*(ltv-1);
-        uint256 repay2=1066*currentLiquidationThreshold-1000;
-        repay2=repay2/1000;
-        //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
-        
-        //checkpoint through printing
-        console.log("if we reached here then it is liquidatable and let's print position values");
-        console.log("The total debt is %d", totalDebtETH);
-        console.log("Liquidation Threshold = %d", currentLiquidationThreshold);
-        console.log("LTV= ", ltv);
-        console.log("Health factor should be less than1 = ", healthFactor);
-        console.log(" repay d= ", repay1);
-        console.log(" repay n= ", repay2);
-        repay1=uint256(repay1/repay2);
-        //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
-        console.log("Now repay should equal ", repay1);
+        // totalCollateralETH is equivalent to WBTC borrowed
+        // totalDebtETH is equivalent to USDT owed by loan
 
-        
-        // 2. call flash swap to liquidate the target user
-        // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
         // we know that the target user borrowed USDT with WBTC as collateral
-        // we should borrow USDT, liquidate the target user and get the WBTC, then swap WBTC to repay uniswap
+        // so we should borrow USDT using Uniswap
+
+        uint256 healthFactor;
+
+        (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
+        console.log("healthfactor=", healthFactor);
+        require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
+        uint256 usdt_amount_in_eth = 1756100000000; 
+        console.log("Amount to borrow in USDT is %s tokens", usdt_amount_in_eth);
+        weth_usdt_uniswap.swap(0, usdt_amount_in_eth, me, "not null for flash swap");
+        console.log("called flash swap");
+
+        uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(me);
+
+        // 2. call flash swap to liquidate the target user VIA uniswapV2Call
+        // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
+        
+        // weth_usdt_uniswap.uniswapV2Call(me, 0, usdt_amount_in_eth, "not null for flash swap");
+        
         // (please feel free to develop other workflows as long as they liquidate the target user successfully)
         //    *** Your code here ***
-
-       address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
-       uint256 value =totalDebtETH*2000000;
-       console.log("flashloan value= %d",value);
-        if (liquitable){
-           bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
-           // uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebtETH), 0, data);
-           //should get the flashloan value in btc like the value locked, I think?
-          // uint256 value =totalDebtETH*2300000;
-           console.log("position is liquidatable");
-           IUniswapV2Pair(usdt_wbtc_pair).swap(value, 0, address(this), data);
-        //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
-        }
-
-
+        
         // 3. Convert the profit into ETH and send back to sender
+        //    convert WETH to ETH
         //    *** Your code here ***
 
-        // END TODO
+        IERC20(WBTC).approve(address(uniswap_router), (2**256)-1); // just approve max  
+        address[] memory pair = new address[](2);
+        pair[0] = address(IERC20(WBTC));
+        pair[1] =  address(IWETH(WETH));
+        uniswap_router.swapExactTokensForETH(balance_in_wbtc, 0, pair, msg.sender, block_number);
+
+        uint256 weth_balance = IWETH(WETH).balanceOf(me);
+        IWETH(WETH).withdraw(weth_balance);
+        payable(msg.sender).transfer(weth_balance);
+        msg.sender.call{value: weth_balance}("");
+
     }
-/*
+
     // required by the swap
     function uniswapV2Call(
-        address,
-        uint256,
-        uint256 amount1,
+        address sender,
+        uint256 amount0, // should be 0 = amount in WETH to be given to pool
+        uint256 amount1, // should be usdt_amount_in_weth = amout of USDT to be taken from pool
         bytes calldata
     ) external override {
-        // TODO: implement your liquidation logic
-      
+        // implement your liquidation logic
+
         // 2.0. security checks and initializing variables
         //    *** Your code here ***
 
-        address token0 = IUniswapV2Pair(msg.sender).token0(); // fetch the address of token0
-        address token1 = IUniswapV2Pair(msg.sender).token1(); // fetch the address of token1
-        assert(msg.sender == IUniswapV2Factory(factoryV2).getPair(token0, token1)); // ensure that msg.sender is a V2 pair
-        
-        // rest of the function goes here!
+        // console.log tool edstem
+
         // 2.1 liquidate the target user
         //    *** Your code here ***
-        ILendingPool.liquidationCall(token0, token1, address(this), uint(-1), false); //changed from Aave to -1 limit 
-        
-        // 2.2 swap WBTC for other things or repay directly
-        //    *** Your code here ***
-        /* //code for 1 liquidation
-        unit amountRequired = getAmountIn(sender, token0, token1);
-        IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
-        // 2.3 repay
-        //    *** Your code here ***
-        IERC20.approve(sender, amountRequired);
-        IERC20.transfer(sender, amountRequired);
-        // END TODO*/
- /*       
- //This is to do 2 liquidation steps
-        ILendingPool.liquidationCall(token0, token1, address(this), repay1, false); //changed from Aave to -1 limit 
-        
-        // 2.2 swap WBTC for other things or repay directly
-        uint256 amountRequired = getAmountIn(sender, token0, token1);
-        IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
-        // 2.3 repay
-        IERC20.approve(sender, amountRequired);
-        IERC20.transfer(sender, amountRequired);
-        
-//now 2nd liquidation
-        ILendingPool.liquidationCall(token0, token1, address(this), uint(-1), false); //changed from Aave to -1 limit 
-       
-        // 2.2 swap WBTC for other things or repay directly
-        uint256 amountRequired2 = getAmountIn(sender, token0, token1);
-        IUniswapV2Pair.swap(amount0Out, amountRequired2, address (this), data);
-        // 2.3 repay
-        IERC20.approve(sender, amountRequired2);
-        IERC20.transfer(sender, amountRequired2);
 
-    } */
+        // then liquidate the target user on Aave and get the WBTC collateral back
+
+        console.log("DEBUG HERE");
+
+        IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
+        (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
+        lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1, false);
+
+        uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        console.log("Balance in WBTC is %s tokens", balance_in_wbtc);
+        
+        // // 2.2 swap WBTC for other things or repay directly
+        // //    *** Your code here ***
+
+        // // 2.3 repay
+        // //    *** Your code here ***
+
+        // // then swap WBTC for WETH to repay uniswap
+
+        IERC20(WBTC).approve(address(uniswap_router), (2**256)-1); // just approve max  
+        // address pair[2] = [address(WBTC), address(WETH)] doesn't work
+        address[] memory pair = new address[](2);
+        pair[0] = address(WBTC);
+        pair[1] = address(WETH);
+        uint256 amountIn = getAmountIn(amount1, reserves_wbtc, reserves_weth);
+        console.log("Routing for exact swap");
+        uniswap_router.swapTokensForExactTokens(amountIn, (2**256)-1, pair, msg.sender, block_number);
+
+    }
 }
