@@ -306,8 +306,8 @@ interface IUniswapV2Pair {
     address token0;
     address token1;
     address pair = IUniswapV2Factory(FACTORY).getPair(token0, token1);
-    require(msg.sender == pair, "!pair");
-    require(_sender == address(this), "!sender"); 
+   // require(msg.sender == pair, "!pair");
+  //  require(_sender == address(this), "!sender"); 
 
         //address token0 = IUniswapV2Pair(msg.sender).tokenA(); // fetch the address of token0
         //address token1 = IUniswapV2Pair(msg.sender).tokenB(); // fetch the address of token1
