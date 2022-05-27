@@ -320,15 +320,18 @@ interface IUniswapV2Pair {
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
          //code for 1 liquidation
-        uint256 amount0Out= IERC20.balanceOf(sender);
+        uint256 amount0Out= IERC20.balanceOf(msg.sender);
         console.log("amount0Out= ",amount0Out);
-        uint256 amountRequired = getAmountIn(sender, token0, token1);
+        uint256 x=IERC20.balanceOf(usdtToken);
+        console.log("if we make it usd token",x); 
+        uint256 amountRequired = getAmountIn(msg.sender, token0, token1);
         console.log("amountRequired=",amountRequired);
+        bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
         IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
         // 2.3 repay
         //    *** Your code here ***
-        IERC20.approve(sender, amountRequired);
-        IERC20.transfer(sender, amountRequired);
+        IERC20.approve(msg.sender, amountRequired);
+        IERC20.transfer(msg.sender, amountRequired);
         // END TODO*/
  /*       
  //This is to do 2 liquidation steps
