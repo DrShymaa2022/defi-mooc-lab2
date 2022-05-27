@@ -208,7 +208,8 @@ interface IUniswapV2Pair {
         constructor() {
         // TODO: (optional) initialize your contract
         //   *** Your code here ***
-        lendingPool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
+        //lendingPool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
+        lendingPool = ILendingPool(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
         uniswapFactory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
        // owner = msg.sender;
         // END TODO
