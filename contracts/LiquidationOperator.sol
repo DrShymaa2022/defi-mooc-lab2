@@ -142,8 +142,8 @@ interface IUniswapV2Pair {
 
 //Shymaa fork code embedding starts from here
 
-    contract LiquidationOperator //is IUniswapV2Callee {
-    {
+    contract LiquidationOperator is IUniswapV2Callee {
+    //{
     uint8 public constant health_factor_decimals = 18;
 
     // TODO: define constants used in the contract including ERC-20 tokens, Uniswap Pairs, Aave lending pools, etc. */
@@ -215,7 +215,6 @@ interface IUniswapV2Pair {
         // TODO: (optional) initialize your contract
         //   *** Your code here ***
         lendingPool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
-       // lendingPool = ILendingPool(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
         uniswapFactory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
        // owner = msg.sender;
         // END TODO
@@ -291,7 +290,7 @@ interface IUniswapV2Pair {
 
         // END TODO
     }
-/*
+
     // required by the swap
     function uniswapV2Call(
         address,
@@ -303,10 +302,15 @@ interface IUniswapV2Pair {
       
         // 2.0. security checks and initializing variables
         //    *** Your code here ***
+        
+        
+    /*address pair = IUniswapV2Factory(FACTORY).getPair(token0, token1);
+    require(msg.sender == pair, "!pair");
+    require(_sender == address(this), "!sender"); */
 
         address token0 = IUniswapV2Pair(msg.sender).token0(); // fetch the address of token0
         address token1 = IUniswapV2Pair(msg.sender).token1(); // fetch the address of token1
-        assert(msg.sender == IUniswapV2Factory(factoryV2).getPair(token0, token1)); // ensure that msg.sender is a V2 pair
+        assert(msg.sender == IUniswapV2Factory(FACTORY).getPair(token0, token1)); // ensure that msg.sender is a V2 pair
         
         // rest of the function goes here!
         // 2.1 liquidate the target user
@@ -315,8 +319,11 @@ interface IUniswapV2Pair {
         
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
-        /* //code for 1 liquidation
-        unit amountRequired = getAmountIn(sender, token0, token1);
+         //code for 1 liquidation
+        uint256 amount0Out= IERC20.balanceOf(sender);
+        console.log("amount0Out= ",amount0Out);
+        uint256 amountRequired = getAmountIn(sender, token0, token1);
+        console.log("amountRequired=",amountRequired);
         IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
         // 2.3 repay
         //    *** Your code here ***
