@@ -264,12 +264,14 @@ interface IUniswapV2Pair {
         //    *** Your code here ***
 
        address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
+       uint256 value =totalDebtETH*2000000;
+       console.log("flashloan value= %d",value);
         if (liquitable){
            bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
            // uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebtETH), 0, data);
            //should get the flashloan value in btc like the value locked, I think?
-           uint256 value =totalDebtETH*2300000;
-           console.log("flashloan value= %d",value);
+          // uint256 value =totalDebtETH*2300000;
+           console.log("position is liquidatable");
            IUniswapV2Pair(usdt_wbtc_pair).swap(value, 0, address(this), data);
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
