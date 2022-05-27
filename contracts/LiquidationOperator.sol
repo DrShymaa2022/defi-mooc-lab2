@@ -158,7 +158,13 @@ interface IUniswapV2Pair {
     //this is from the assignment 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F
           
     ILendingPool lendingPool;
-    IUniswapV2Factory uniswapFactory;      
+    IUniswapV2Factory uniswapFactory;   
+    //these constant addresses are said to be from uniswap documentation in the flashloan defi by example file
+    // Uniswap V2 router
+    // 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+    address private constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    // Uniswap V2 factory
+    address private constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
     // END TODO
 
     // some helper function, it is totally fine if you can finish the lab without using these function
@@ -259,7 +265,7 @@ interface IUniswapV2Pair {
 
        address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
         if (liquitable){
-           bytes memory data;
+           bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
            // uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebtETH), 0, data); 
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
