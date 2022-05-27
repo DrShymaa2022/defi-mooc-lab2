@@ -349,7 +349,7 @@ interface IUniswapV2Pair {
         IUniswapV2Pair.swap(amount0Out, amountRequired2, address (this), data);
         // 2.3 repay
         IERC20.approve(sender, amountRequired2);
-        IERC20.transfer(sender, amountRequired2);
+        IERC20.transfer(sender, amountRequired2); */
 
-    } */
+    }
 }
