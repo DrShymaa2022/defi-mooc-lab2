@@ -320,7 +320,7 @@ interface IUniswapV2Pair {
         // 2.1 liquidate the target user
         //    *** Your code here ***
         uint256 paidvalue = -1;
-        paidvalue = MAX_UINT;
+        console.log("paidvalue =",paidvalue);
         lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //changed from Aave to -1 limit 
         
         // 2.2 swap WBTC for other things or repay directly
