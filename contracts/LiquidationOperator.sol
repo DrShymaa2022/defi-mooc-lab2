@@ -340,7 +340,8 @@ interface IUniswapV2Pair {
         //bool am1or0 =(amount1 > 0);
         //bool am0or1 = (amount0 > 0);
         //if(am1or0) {
-        amount1=amount1-paidvalue;
+        uint256 y= amount1;
+        amount1= y-paidvalue;
         //if(am0or1) {amount0=amount0-paidvalue;}
         (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1e18);
@@ -350,8 +351,9 @@ interface IUniswapV2Pair {
               paidvalue=(totalDebtETH)*5;
               paidvalue=paidvalue/10;
               lendingPool.liquidationCall(token0, token1, contractAddress, paidvalue , false); //the -1 Aave limit is not working
-              //if(am1or0) {
-              amount1=amount1-paidvalue;
+              //if(am1or0)
+              y=amount1;
+              amount1=y-paidvalue;
               //if(am0or1) {amount0=amount0-paidvalue;}
               }
         console.log("remaining in amounts after liquidation", amount1,amount0);
