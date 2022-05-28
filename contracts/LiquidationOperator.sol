@@ -319,7 +319,7 @@ interface IUniswapV2Pair {
         // rest of the function goes here!
         // 2.1 liquidate the target user
         //    *** Your code here ***
-        lendingPool.liquidationCall(token0, token1, address(this), (-1), false); //changed from Aave to -1 limit 
+        lendingPool.liquidationCall(token0, token1, address(this), MAX_UINT, false); //changed from Aave to -1 limit 
         
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
