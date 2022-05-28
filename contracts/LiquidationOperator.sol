@@ -145,12 +145,12 @@ interface IUniswapV2Pair {
     contract LiquidationOperator is IUniswapV2Callee {
     //{
     uint8 public constant health_factor_decimals = 18;
-    uint256 totalCollateralETH;
+    /*uint256 totalCollateralETH;
     uint256 totalDebtETH;
     uint256 availableBorrowsETH;
     uint256 currentLiquidationThreshold;
     uint256 ltv;
-    uint256 healthFactor;
+    uint256 healthFactor;*/
     // TODO: define constants used in the contract including ERC-20 tokens, Uniswap Pairs, Aave lending pools, etc. */
     address payable owner;
     address ETH_TOKEN_ADDRESS = address(0x0);
@@ -243,7 +243,12 @@ interface IUniswapV2Pair {
         // 1. get the target user account data & make sure it is liquidatable
         //    *** Your code here ***
         
-           
+         uint256 totalCollateralETH;
+         uint256 totalDebtETH;
+         uint256 availableBorrowsETH;
+         uint256 currentLiquidationThreshold;
+         uint256 ltv;
+         uint256 healthFactor;  
         (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1e18);
 
@@ -319,6 +324,12 @@ interface IUniswapV2Pair {
         // rest of the function goes here!
         // 2.1 liquidate the target user
         //    *** Your code here ***
+        uint256 totalCollateralETH;
+        uint256 totalDebtETH;
+        uint256 availableBorrowsETH;
+        uint256 currentLiquidationThreshold;
+        uint256 ltv;
+        uint256 healthFactor;
         uint256 repay1=(totalDebtETH)*(ltv-1);
         uint256 repay2=1066*currentLiquidationThreshold-1000;
         repay2=repay2/1000;
@@ -328,7 +339,13 @@ interface IUniswapV2Pair {
         lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //the -1 Aave limit is not working
         (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1e18);
-        if (liquitable) console.log("new healthfactor value",healthFactor); 
+        if (liquitable) { 
+               
+              console.log("new healthfactor value",healthFactor);
+              paidvalue=(totalDebtETH)*0.5;
+              lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //the -1 Aave limit is not working
+              }
+        
         
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
