@@ -337,12 +337,7 @@ interface IUniswapV2Pair {
         // to remember to modify it (debtAssetPrice * debtToCover * liquidationBonus)/ collateralPrice
         console.log("step1 of 2 steps optimal liquidation =", paidvalue);
         lendingPool.liquidationCall(token0, token1, contractAddress, paidvalue , false); //the -1 Aave limit is not working
-        //bool am1or0 =(amount1 > 0);
-        //bool am0or1 = (amount0 > 0);
-        //if(am1or0) {
-        uint256 y= amount1;
-        amount1= y-paidvalue;
-        //if(am0or1) {amount0=amount0-paidvalue;}
+        
         (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1e18);
         if (liquitable) { 
@@ -351,11 +346,7 @@ interface IUniswapV2Pair {
               paidvalue=(totalDebtETH)*5;
               paidvalue=paidvalue/10;
               lendingPool.liquidationCall(token0, token1, contractAddress, paidvalue , false); //the -1 Aave limit is not working
-              //if(am1or0)
-              y=amount1;
-              amount1=y-paidvalue;
-              //if(am0or1) {amount0=amount0-paidvalue;}
-              }
+                      }
         console.log("remaining in amounts after liquidation", amount1,amount0);
         
         // 2.2 swap WBTC for other things or repay directly
