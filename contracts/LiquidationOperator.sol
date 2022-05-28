@@ -337,8 +337,8 @@ interface IUniswapV2Pair {
         // to remember to modify it (debtAssetPrice * debtToCover * liquidationBonus)/ collateralPrice
         console.log("step1 of 2 steps optimal liquidation =", paidvalue);
         lendingPool.liquidationCall(token0, token1, contractAddress, paidvalue , false); //the -1 Aave limit is not working
-        if(amount1 > 0) amount1=amount1-paidvalue;
-        if(amount0 > 0) amount0=amount0-paidvalue;
+        if(amount1) {amount1=amount1-paidvalue;}
+        if(amount0) {amount0=amount0-paidvalue;}
         (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1e18);
         if (liquitable) { 
@@ -347,8 +347,8 @@ interface IUniswapV2Pair {
               paidvalue=(totalDebtETH)*5;
               paidvalue=paidvalue/10;
               lendingPool.liquidationCall(token0, token1, contractAddress, paidvalue , false); //the -1 Aave limit is not working
-              if(amount1 > 0) amount1=amount1-paidvalue;
-              if(amount0 > 0) amount0=amount0-paidvalue;
+              if(amount1) {amount1=amount1-paidvalue;}
+              if(amount0) {amount0=amount0-paidvalue;}
               }
         console.log("remaining in amounts after liquidation", amount1,amount0);
         
