@@ -319,9 +319,12 @@ interface IUniswapV2Pair {
         // rest of the function goes here!
         // 2.1 liquidate the target user
         //    *** Your code here ***
-        uint256 paidvalue = uint(-1);
-        console.log("paidvalue =",paidvalue);
-        lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //changed from Aave to -1 limit 
+        uint256 paidvalue = repay2;
+        // to remember to modify it (debtAssetPrice * debtToCover * liquidationBonus)/ collateralPrice
+        console.log("step1 of 2 steps optimal liquidation =", paidvalue);
+        lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //the -1 Aave limit is not working
+        (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
+        console.log("new healthfactor value",healthFactor); 
         
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
