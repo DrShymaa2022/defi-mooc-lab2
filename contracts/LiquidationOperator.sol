@@ -342,7 +342,8 @@ interface IUniswapV2Pair {
         if (liquitable) { 
                
               console.log("new healthfactor value",healthFactor);
-              paidvalue=(totalDebtETH)*0.5;
+              paidvalue=(totalDebtETH)*5;
+              paidvalue=paidvalue/10;
               lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //the -1 Aave limit is not working
               }
         
