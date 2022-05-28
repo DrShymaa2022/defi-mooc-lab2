@@ -328,7 +328,7 @@ interface IUniswapV2Pair {
         lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //the -1 Aave limit is not working
         (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1e18);
-        if liquidatable console.log("new healthfactor value",healthFactor); 
+        if (liquitable) console.log("new healthfactor value",healthFactor); 
         
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
