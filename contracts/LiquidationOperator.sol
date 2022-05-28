@@ -157,6 +157,7 @@ interface IUniswapV2Pair {
     address usdtAddress = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
     address usdtToken = usdtAddress;
     IERC20 US_Token = IERC20(usdtAddress);
+    
     address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
     //this is from the assignment 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F
           
@@ -164,13 +165,15 @@ interface IUniswapV2Pair {
    /* /// Retrieve LendingPool address
     ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8)); // mainnet address, for other addresses: https://docs.aave.com/developers/deployed-contracts/deployed-contract-instances 
     ILendingPool lendingPool_Provider = ILendingPool(provider.getLendingPool());*/
-    IUniswapV2Factory uniswapFactory;   
+    IUniswapV2Factory uniswapFactory; 
+    
     //these constant addresses are said to be from uniswap documentation in the flashloan defi by example file
     // Uniswap V2 router
     // 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
     address private constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     // Uniswap V2 factory
     address private constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
+    address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
     // END TODO
 
     // some helper function, it is totally fine if you can finish the lab without using these function
@@ -269,7 +272,7 @@ interface IUniswapV2Pair {
         // (please feel free to develop other workflows as long as they liquidate the target user successfully)
         //    *** Your code here ***
 
-       address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
+       
        uint256 value =totalDebtETH*2000;
        value = value/1e18;
        console.log("flashloan value in USD= %d",value);
