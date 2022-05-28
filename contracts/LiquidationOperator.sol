@@ -347,7 +347,7 @@ interface IUniswapV2Pair {
               paidvalue=paidvalue/10;
               lendingPool.liquidationCall(token0, token1, contractAddress, paidvalue , false); //the -1 Aave limit is not working
                       }
-        console.log("remaining in amounts after liquidation", amount1,amount0);
+        //console.log("remaining in amounts after liquidation", amount1,amount0);
         
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
