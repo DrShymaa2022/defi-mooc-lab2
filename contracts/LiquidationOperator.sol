@@ -152,11 +152,11 @@ interface IUniswapV2Pair {
     
     address wbtcAddress = address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
     address wbtcToken = wbtcAddress;
-    //IERC20 wbtcToken = IERC20(wbtcAddress);
+    IERC20 BTC_Token = IERC20(wbtcAddress);
     address contractAddress = address(0xB7990F251451a89728EB2aa7b0a529f51d127478); // corrected according to checksum 0xB7990F251451a89728EB2aa7b0a529f51d127478
     address usdtAddress = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
     address usdtToken = usdtAddress;
-    //IERC20 usdtToken = IERC20(usdtAddress);
+    IERC20 US_Token = IERC20(usdtAddress);
     address user_account = address(0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F);
     //this is from the assignment 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F
           
@@ -306,7 +306,7 @@ interface IUniswapV2Pair {
     address token0;
     address token1;
     address pair = IUniswapV2Factory(FACTORY).getPair(token0, token1);
-   // require(msg.sender == pair, "!pair");
+    require(usdt_wbtc_pair == pair, "!pair");
   //  require(_sender == address(this), "!sender"); 
 
         //address token0 = IUniswapV2Pair(msg.sender).tokenA(); // fetch the address of token0
@@ -316,23 +316,26 @@ interface IUniswapV2Pair {
         // rest of the function goes here!
         // 2.1 liquidate the target user
         //    *** Your code here ***
-        ILendingPool.liquidationCall(token0, token1, address(this), uint(-1), false); //changed from Aave to -1 limit 
+        lendingPool.liquidationCall(token0, token1, address(this), (-1), false); //changed from Aave to -1 limit 
         
         // 2.2 swap WBTC for other things or repay directly
         //    *** Your code here ***
          //code for 1 liquidation
-        uint256 amount0Out= IERC20.balanceOf(msg.sender);
+        uint256 amount0Out= US_Token.balanceOf(usdtToken);
         console.log("amount0Out= ",amount0Out);
-        uint256 x=IERC20.balanceOf(usdtToken);
-        console.log("if we make it usd token",x); 
-        uint256 amountRequired = getAmountIn(msg.sender, token0, token1);
-        console.log("amountRequired=",amountRequired);
+        uint256 x= BTC_Token.balanceOf(wbtcToken);
+        console.log("if we make it wbtc token",x); 
+        // uint256 amountRequired = getAmountIn(msg.sender, token0, token1);
+        //console.log("amountRequired=",amountRequired);
+        uint256 amountRequired=x;
         bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
-        IUniswapV2Pair.swap(amount0Out, amountRequired, address (this), data);
+        IUniswapV2Pair(usdt_wbtc_pair).swap(amountRequired, amount0Out, address (this), data);
         // 2.3 repay
         //    *** Your code here ***
-        IERC20.approve(msg.sender, amountRequired);
-        IERC20.transfer(msg.sender, amountRequired);
+        //IERC20.approve(msg.sender, amountRequired);
+        US_Token.approve(usdtToken, amountRequired);
+        //IERC20.transfer(msg.sender, amountRequired);
+         US_Token.transfer(usdtToken, amountRequired);
         // END TODO*/
  /*       
  //This is to do 2 liquidation steps
