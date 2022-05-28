@@ -287,7 +287,7 @@ interface IUniswapV2Pair {
            //should get the flashloan value in btc like the value locked, I think?
           // uint256 value =totalDebtETH*2300000;
            console.log("position is liquidatable");
-           IUniswapV2Pair(usdt_wbtc_pair).swap(value, 0, address(this), data);
+           IUniswapV2Pair(usdt_wbtc_pair).swap(value, 0, contractAddress, data);
             console.log("we took the flashloan");
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
@@ -301,7 +301,7 @@ interface IUniswapV2Pair {
 
     // required by the swap
     function uniswapV2Call(
-        address,
+        address sender,
         uint256 amount0,
         uint256 amount1,
         bytes calldata
@@ -336,7 +336,7 @@ interface IUniswapV2Pair {
         uint256 paidvalue = uint256(repay1/repay2);
         // to remember to modify it (debtAssetPrice * debtToCover * liquidationBonus)/ collateralPrice
         console.log("step1 of 2 steps optimal liquidation =", paidvalue);
-        lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //the -1 Aave limit is not working
+        lendingPool.liquidationCall(token0, token1, contractAddress, paidvalue , false); //the -1 Aave limit is not working
         if(amount1 > 0) amount1=amount1-paidvalue;
         if(amount0 > 0) amount0=amount0-paidvalue;
         (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
@@ -346,7 +346,7 @@ interface IUniswapV2Pair {
               console.log("new healthfactor value",healthFactor);
               paidvalue=(totalDebtETH)*5;
               paidvalue=paidvalue/10;
-              lendingPool.liquidationCall(token0, token1, address(this), paidvalue , false); //the -1 Aave limit is not working
+              lendingPool.liquidationCall(token0, token1, contractAddress, paidvalue , false); //the -1 Aave limit is not working
               if(amount1 > 0) amount1=amount1-paidvalue;
               if(amount0 > 0) amount0=amount0-paidvalue;
               }
@@ -363,7 +363,7 @@ interface IUniswapV2Pair {
         //console.log("amountRequired=",amountRequired);
         uint256 amountRequired=x;
         bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
-        IUniswapV2Pair(usdt_wbtc_pair).swap(amountRequired, amount0Out, address (this), data);
+        IUniswapV2Pair(usdt_wbtc_pair).swap(amountRequired, amount0Out, contractAddress, data);
         // 2.3 repay
         //    *** Your code here ***
         //IERC20.approve(msg.sender, amountRequired);
