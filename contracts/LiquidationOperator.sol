@@ -290,7 +290,7 @@ interface IUniswapV2Pair {
            //should get the flashloan value in btc like the value locked, I think?
           // uint256 value =totalDebtETH*2300000
            console.log("position is liquidatable");
-           IUniswapV2Pair(usdt_wbtc_pair).swap(value, 0, contractAddress, data);
+           IUniswapV2Pair(usdt_wbtc_pair).swap(value, 0, address(this), data);
             console.log("we took the flashloan");
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
@@ -302,7 +302,8 @@ interface IUniswapV2Pair {
         // END TODO
     }
 
-    /*// required by the swap
+    /*
+    // required by the swap
     function uniswapV2Call(
         address sender,
         uint256 amount0,
@@ -363,7 +364,7 @@ interface IUniswapV2Pair {
         //console.log("amountRequired=",amountRequired);
         uint256 amountRequired=x;
         bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
-        IUniswapV2Pair(usdt_wbtc_pair).swap(amountRequired, amount0Out, contractAddress, data);
+        IUniswapV2Pair(usdt_wbtc_pair).swap(amountRequired, amount0Out, address(this), data);
         // 2.3 repay
         //    *** Your code here ***
         //IERC20.approve(msg.sender, amountRequired);
