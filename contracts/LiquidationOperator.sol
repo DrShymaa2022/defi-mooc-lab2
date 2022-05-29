@@ -243,7 +243,7 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
-        uint256 usdt_amount_in_eth = 1456100000000; //1756100000000; 
+        uint256 usdt_amount_in_eth = 1996100000000; //1756100000000; 
         console.log("Amount to borrow in USDT is %s tokens", usdt_amount_in_eth);
         weth_usdt_uniswap.swap(0, usdt_amount_in_eth, me, "not null for flash swap");
         console.log("called flash swap");
@@ -295,9 +295,16 @@ contract LiquidationOperator is IUniswapV2Callee {
         // then liquidate the target user on Aave and get the WBTC collateral back
 
         console.log("DEBUG HERE");
-
+        //1st liquidation
+        uint256 repay1=711111111;
+        console.log("1st repay=",repay1);
+        IERC20(USDT).approve(address(lending_pool), repay1);
+        (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
+        lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, repay1, false);
+        
+        //2nd liquidation
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
-        console.log("amount1=",amount1);
+        console.log("remaining=",amount1-repay1);
         (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1, false);
 
@@ -314,7 +321,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         // // then swap WBTC for WETH to repay uniswap
 
         IERC20(WBTC).approve(address(uniswap_router), (2**256)-1); // just approve max  
-        // address pair[2] = [address(WBTC), address(WETH)] doesn't work
+        
         address[] memory pair = new address[](2);
         pair[0] = address(WBTC);
         pair[1] = address(WETH);
