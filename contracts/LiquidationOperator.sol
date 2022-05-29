@@ -302,7 +302,7 @@ interface IUniswapV2Pair {
         // END TODO
     }
 
-    // required by the swap
+    /*// required by the swap
     function uniswapV2Call(
         address sender,
         uint256 amount0,
@@ -392,5 +392,5 @@ interface IUniswapV2Pair {
         IERC20.approve(sender, amountRequired2);
         IERC20.transfer(sender, amountRequired2); */
 
-    }
+  //  }
 }
