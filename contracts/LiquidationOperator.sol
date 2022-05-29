@@ -303,6 +303,7 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
         console.log("Balance in WBTC is %s tokens", balance_in_wbtc);
+        console.log("amount1=", amount1);
         
         // // 2.2 swap WBTC for other things or repay directly
         // //    *** Your code here ***
