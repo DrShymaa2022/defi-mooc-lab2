@@ -243,7 +243,7 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
-        uint256 usdt_amount_in_eth = 1956100000000; //1756100000000; 
+        uint256 usdt_amount_in_eth = 1856100000000; //1756100000000; 
         console.log("Amount to borrow in USDT is %s tokens", usdt_amount_in_eth);
         weth_usdt_uniswap.swap(0, usdt_amount_in_eth, me, "not null for flash swap");
         console.log("called flash swap");
@@ -297,6 +297,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("DEBUG HERE");
 
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
+        console.log("amount1=",amount1);
         (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1, false);
 
