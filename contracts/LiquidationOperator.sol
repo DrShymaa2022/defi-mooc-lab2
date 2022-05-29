@@ -162,9 +162,10 @@ interface IUniswapV2Pair {
     //this is from the assignment 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F
           
     ILendingPool lendingPool;
+    /*
     /// Retrieve LendingPool address
     ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8)); // mainnet address, for other addresses: https://docs.aave.com/developers/deployed-contracts/deployed-contract-instances 
-    ILendingPool lendingPool_Provider = ILendingPool(provider.getLendingPool());
+    ILendingPool lendingPool_Provider = ILendingPool(provider.getLendingPool());*/
     IUniswapV2Factory uniswapFactory;   
     //these constant addresses are said to be from uniswap documentation in the flashloan defi by example file
     // Uniswap V2 router
@@ -275,12 +276,15 @@ interface IUniswapV2Pair {
 
        address usdt_wbtc_pair = uniswapFactory.getPair(usdtToken, wbtcToken);
        uint256 value =totalDebtETH*1200; //larger than 0.6 of debt with current Ethereum price at 29May2022
+       value = value/1e18;
        console.log("flashloan value in /dollars= %d",value);
+       //liquitable=false;
         if (liquitable){
            bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
-         
-           console.log("position is liquidatable");
+        
+           console.log("position is liquitable");
            IUniswapV2Pair(usdt_wbtc_pair).swap(value, 0, address(this), data);
+           console.log("did we pass here?);
         //I'm taking a Flashloan that is roughly larger than both liquidation steps, since no harm is done if it is larger
         }
 
