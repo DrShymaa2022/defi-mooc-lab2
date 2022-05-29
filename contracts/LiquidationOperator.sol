@@ -305,7 +305,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         //2nd liquidation
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
         console.log("remaining=",amount1-repay1);
-        (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
+        ( reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1, false);
 
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
