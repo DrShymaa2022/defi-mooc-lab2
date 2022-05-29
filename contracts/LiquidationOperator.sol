@@ -162,9 +162,9 @@ contract LiquidationOperator is IUniswapV2Callee {
     address me = address(this);
     
     // mainnet address, for other addresses: https://docs.aave.com/developers/developing-on-aave/deployed-contract-instances
-    ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8));     
+    //ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8));     
     ILendingPool lending_pool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
-    ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
+    //ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     IUniswapV2Router02 uniswap_router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
 
 
