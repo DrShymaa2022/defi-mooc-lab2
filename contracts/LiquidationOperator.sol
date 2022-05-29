@@ -142,8 +142,8 @@ interface IUniswapV2Pair {
 
 //Shymaa fork code embedding starts from here
 
-    contract LiquidationOperator is IUniswapV2Callee {
-    //{
+    contract LiquidationOperator //is IUniswapV2Callee {
+    {
     uint8 public constant health_factor_decimals = 18;
     /*uint256 totalCollateralETH;
     uint256 totalDebtETH;
@@ -249,7 +249,7 @@ interface IUniswapV2Pair {
          uint256 currentLiquidationThreshold;
          uint256 ltv;
          uint256 healthFactor;  
-        (,totalDebtETH,,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
+        (totalCollateralETH,totalDebtETH,availableBorrowsETH,currentLiquidationThreshold,ltv,healthFactor) = lendingPool.getUserAccountData(user_account);
         bool liquitable = (healthFactor < 1e18);
 
         uint256 repay1=(totalDebtETH)*(ltv-1);
@@ -259,7 +259,9 @@ interface IUniswapV2Pair {
         
         //checkpoint through printing
         console.log("if we reached here then it is liquidatable and let's print position values");
-        console.log("The total debt is %d", totalDebtETH);
+        console.log("totalCollateralETH=%d",totalCollateralETH/1e18);
+        console.log("The total debt in ETH is %d", totalDebtETH/1e18);
+        console.log("availableBorrowsETH= %d",availableBorrowsETH/1e18);
         console.log("Liquidation Threshold = %d", currentLiquidationThreshold);
         console.log("LTV= ", ltv);
         console.log("Health factor should be less than1 = ", healthFactor);
@@ -267,7 +269,7 @@ interface IUniswapV2Pair {
         console.log(" repay n= ", repay2);
         repay1=uint256(repay1/repay2);
         //This is the value that make health factor still<1, Aave documents say LS=6.5% so I made it 1.066 to make repay slightly less
-        console.log("Now repay should equal ", repay1);
+        console.log("Now repay should equal %d ", repay1/1e18);
 
         
         // 2. call flash swap to liquidate the target user
@@ -278,14 +280,15 @@ interface IUniswapV2Pair {
         //    *** Your code here ***
 
        
-       uint256 value =totalDebtETH*2000;
+       uint256 value =totalDebtETH*1200;
        value = value/1e18;
        console.log("flashloan value in USD= %d",value);
+       liquitable=false;
         if (liquitable){
            bytes memory data= "any non null string"; //for the call to be flashloan not regular swap
            // uniswapV2Call(usdt_wbtc_pair,(0.6*totalDebtETH), 0, data);
            //should get the flashloan value in btc like the value locked, I think?
-          // uint256 value =totalDebtETH*2300000;
+          // uint256 value =totalDebtETH*2300000
            console.log("position is liquidatable");
            IUniswapV2Pair(usdt_wbtc_pair).swap(value, 0, contractAddress, data);
             console.log("we took the flashloan");
