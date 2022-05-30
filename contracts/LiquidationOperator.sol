@@ -247,10 +247,12 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 usdt_amount_in_eth = 1811100000000; //1756100000000; the no I wrote is by adding the 1st repay value
         console.log("Amount to borrow in USDT is %s tokens", usdt_amount_in_eth);
         weth_usdt_uniswap.swap(0, usdt_amount_in_eth, me, "not null for flash swap");
-        console.log("called flash swap");
+        console.log("back from flash swap call; ie finished");
 
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(me);
-        console.log("balance in wbt =this is for the whole flashloan what it worths in WBTC=", balance_in_wbtc);
+        console.log("balance in wbt =this is what remains in supposely my account after paying back the flashloan:");
+        console.log("in WBTC=", balance_in_wbtc);
+        console.log("in WETH=",IERC20(WETH).balanceOf(me));
 
         // 2. call flash swap to liquidate the target user VIA uniswapV2Call
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -302,9 +304,9 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint112 reserves_weth;
         
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
-        console.log("Remember now what we have in WBTC  before liquidation =is %d tokens", balance_in_wbtc);
+        console.log("now we have just entered the uniswap call we don't have any WBTC  before liquidation balance is zero = %d tokens", balance_in_wbtc);
         //1st liquidation
-        uint256 repay1=87711111111;
+        uint256 repay1=97711111111;
         console.log("1st repay=",repay1);
         IERC20(USDT).approve(address(lending_pool), repay1);
         (reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
@@ -316,14 +318,21 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 healthFactor;
         (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
-        if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor); 
+        if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor);
+        balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        console.log("for debugging do we still have our WBTC balance after position? WBTC=", balance_in_wbtc);
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
         console.log("remaining=",amount1-repay1); 
+        balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        console.log("for debugging do we still have our WBTC balance after approve? WBTC=", balance_in_wbtc);
         ( reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
+        balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        console.log("for debugging do we still have our WBTC balance uniswapv2pair? WBTC=", balance_in_wbtc);
+        
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1-repay1, false);
 
         balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
-        console.log("After 2nd liquidation WBTC Balance=", balance_in_wbtc);
+        console.log("After 2nd liquidation WBTC Balance, is it added or overwritten? WBTC=", balance_in_wbtc);
         //console.log("amount1=", amount1);
         
         // // 2.2 swap WBTC for other things or repay directly
