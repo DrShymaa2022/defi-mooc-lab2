@@ -243,7 +243,8 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
-        uint256 usdt_amount_in_eth = 1811100000000; //1756100000000; 
+        console.log("position is liquitable with HF=",healthFactor);
+        uint256 usdt_amount_in_eth = 1811100000000; //1756100000000; the no I wrote is by adding the 1st repay value
         console.log("Amount to borrow in USDT is %s tokens", usdt_amount_in_eth);
         weth_usdt_uniswap.swap(0, usdt_amount_in_eth, me, "not null for flash swap");
         console.log("called flash swap");
@@ -298,7 +299,7 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         console.log("DEBUG HERE");
         //1st liquidation
-        uint256 repay1=77711111111;
+        uint256 repay1=87711111111;
         console.log("1st repay=",repay1);
         IERC20(USDT).approve(address(lending_pool), repay1);
         (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
@@ -308,7 +309,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 healthFactor;
         (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
-        if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation");
+        if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor);
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
         console.log("remaining=",amount1-repay1);
         ( reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
