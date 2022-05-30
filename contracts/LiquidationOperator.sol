@@ -279,6 +279,7 @@ contract LiquidationOperator is IUniswapV2Callee {
     // required by the swap
     function uniswapV2Call(
         address sender,
+                      ,
         //uint256 amount0, // should be 0 = amount in WETH to be given to pool
         uint256 amount1, // should be usdt_amount_in_weth = amout of USDT to be taken from pool
         bytes calldata
@@ -297,7 +298,7 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         console.log("DEBUG HERE");
         //1st liquidation
-        uint256 repay1=777711111111;
+        uint256 repay1=77711111111;
         console.log("1st repay=",repay1);
         IERC20(USDT).approve(address(lending_pool), repay1);
         (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
