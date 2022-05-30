@@ -279,7 +279,7 @@ contract LiquidationOperator is IUniswapV2Callee {
     // required by the swap
     function uniswapV2Call(
         address sender,
-                      ,
+        uint256,
         //uint256 amount0, // should be 0 = amount in WETH to be given to pool
         uint256 amount1, // should be usdt_amount_in_weth = amout of USDT to be taken from pool
         bytes calldata
