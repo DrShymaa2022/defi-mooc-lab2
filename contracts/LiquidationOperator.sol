@@ -250,7 +250,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("called flash swap");
 
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(me);
-        console.log("balance in wbt", balance_in_wbtc);
+        console.log("balance in wbt =this is for the whole flashloan what it worths in WBTC=", balance_in_wbtc);
 
         // 2. call flash swap to liquidate the target user VIA uniswapV2Call
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -301,27 +301,30 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint112 reserves_wbtc;
         uint112 reserves_weth;
         
-      
+        uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        console.log("Remember now what we have in WBTC  before liquidation =is %d tokens", balance_in_wbtc);
         //1st liquidation
         uint256 repay1=87711111111;
-       /* console.log("1st repay=",repay1);
+        console.log("1st repay=",repay1);
         IERC20(USDT).approve(address(lending_pool), repay1);
         (reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, repay1, false);
+        balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        console.log("Now after 1st liquidation WBTC balance=", balance_in_wbtc);
         
         //2nd liquidation
         uint256 healthFactor;
         (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
-        if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor); */
+        if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor); 
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
-        console.log("remaining=",amount1); //-repay1
+        console.log("remaining=",amount1-repay1); 
         ( reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
-        lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1, false);
+        lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1-repay1, false);
 
-        uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
-        console.log("Balance in WBTC is %s tokens", balance_in_wbtc);
-        console.log("amount1=", amount1);
+        balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        console.log("After 2nd liquidation WBTC Balance=", balance_in_wbtc);
+        //console.log("amount1=", amount1);
         
         // // 2.2 swap WBTC for other things or repay directly
         // //    *** Your code here ***
