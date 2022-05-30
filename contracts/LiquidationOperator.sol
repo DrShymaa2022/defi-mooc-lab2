@@ -304,6 +304,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, repay1, false);
         
         //2nd liquidation
+        uint256 healthFactor;
         (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation");
