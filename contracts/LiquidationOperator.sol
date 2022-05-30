@@ -298,12 +298,15 @@ contract LiquidationOperator is IUniswapV2Callee {
         // then liquidate the target user on Aave and get the WBTC collateral back
 
         console.log("DEBUG HERE");
+        uint112 reserves_wbtc;
+        uint112 reserves_weth;
+        
       
         //1st liquidation
         uint256 repay1=87711111111;
        /* console.log("1st repay=",repay1);
         IERC20(USDT).approve(address(lending_pool), repay1);
-        (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
+        (reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, repay1, false);
         
         //2nd liquidation
