@@ -297,7 +297,7 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         console.log("DEBUG HERE");
         //1st liquidation
-        uint256 repay1=711111111;
+        uint256 repay1=77711111111;
         console.log("1st repay=",repay1);
         IERC20(USDT).approve(address(lending_pool), repay1);
         (uint112 reserves_wbtc, uint112 reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
