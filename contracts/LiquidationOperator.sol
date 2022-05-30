@@ -249,6 +249,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("called flash swap");
 
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(me);
+        console.log("balance in wbt", balance_in_wbtc);
 
         // 2. call flash swap to liquidate the target user VIA uniswapV2Call
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -303,10 +304,13 @@ contract LiquidationOperator is IUniswapV2Callee {
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, repay1, false);
         
         //2nd liquidation
+        (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
+        require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
+        if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation");
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
         console.log("remaining=",amount1-repay1);
         ( reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
-        lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1, false);
+        lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1-repay1, false);
 
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
         console.log("Balance in WBTC is %s tokens", balance_in_wbtc);
