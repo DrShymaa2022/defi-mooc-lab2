@@ -249,7 +249,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         console.log("position is liquitable with HF=",healthFactor);
-        console.log("total collateral value in ETH=",Collateral_ETH);
+        console.log("total collateral value in ETH=",Collateral_ETH/1e18);
         console.log("The total debt is %d", Debt_ETH/1e18);
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
@@ -327,14 +327,27 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         //2nd liquidation
         uint256 healthFactor;
-        (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
+        uint256 Collateral_ETH;
+        uint256 Debt_ETH;
+        uint256 availableBorrowsETH;
+        uint256 LqThrshld;
+        uint256 ltv;
+
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor);
+        console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18);
+        console.log("The total debt is %d", Debt_ETH/1e18);
+        console.log("Liquidation Threshold = %d", LqThrshld);
+        console.log("LTV= ", ltv);
+        
+        
+        
         balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
         console.log("for debugging do we still have our WBTC balance after position? WBTC=", balance_in_wbtc);
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
         console.log("remaining=",amount1-repay1); 
-        balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        balance_in_wbtc = IERC20(WBTC).balanceOf(me);
         console.log("for debugging do we still have our WBTC balance after approve? WBTC=", balance_in_wbtc);
         ( reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
         balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
@@ -344,6 +357,8 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
         console.log("After 2nd liquidation WBTC Balance, is it added or overwritten? WBTC=", balance_in_wbtc);
+        balance_in_wbtc = IERC20(WBTC).balanceOf(me);
+        console.log("After 2nd liquidation WBTC Balance, is me different than sender? WBTC=", balance_in_wbtc);
         //console.log("amount1=", amount1);
         
         // // 2.2 swap WBTC for other things or repay directly
@@ -362,6 +377,10 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amountIn = getAmountIn(amount1, reserves_wbtc, reserves_weth);
         console.log("Routing for exact swap");
         uniswap_router.swapTokensForExactTokens(amountIn, (2**256)-1, pair, msg.sender, block_number);
+        balance_in_wbtc = IERC20(WBTC).balanceOf(me);
+        console.log("After uniswap router WBTC Balance, is me different than sender? WBTC=", balance_in_wbtc);
+         balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
+        console.log("After uni swap router WBTC Balance, in sender, WBTC=", balance_in_wbtc);
 
     }
 }
