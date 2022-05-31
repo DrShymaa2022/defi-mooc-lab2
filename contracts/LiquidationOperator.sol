@@ -254,7 +254,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("The total debt is %d", Debt_ETH/1e18);
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
-        uint256 usdt_amount_in_eth = 1811100000000; //1756100000000; the no I wrote is by adding the 1st repay value
+        uint256 usdt_amount_in_eth = 1756100000000; //the no I wrote is by adding the 1st repay value
         console.log("Amount to borrow in USDT is %s tokens", usdt_amount_in_eth);
         weth_usdt_uniswap.swap(0, usdt_amount_in_eth, me, "not null for flash swap");
         console.log("back from flash swap call; ie finished");
@@ -351,18 +351,23 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("for debugging do we still have our WBTC balance after position? WBTC=", balance_in_wbtc);
         IERC20(USDT).approve(address(lending_pool), (2**256)-1); // just approve for max
         console.log("remaining=",amount1-repay1); 
-        balance_in_wbtc = IERC20(WBTC).balanceOf(me);
-        console.log("for debugging do we still have our WBTC balance after approve? WBTC=", balance_in_wbtc);
+        balance_in_wbtc = IERC20(USDT).balanceOf(me);
+        console.log("for debugging do we still have our WBTC balance after approve? USDT=", balance_in_wbtc);
         ( reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
         balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
         console.log("for debugging do we still have our WBTC balance uniswapv2pair? WBTC=", balance_in_wbtc);
+        console.log("reserves_wbtc=",reserves_wbtc);
+        console.log("reserves_weth=",reserves_weth);
+        
         
         lending_pool.liquidationCall(address(WBTC), address(USDT), target_address, amount1-repay1, false);
 
-        balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
-        console.log("After 2nd liquidation WBTC Balance, is it added or overwritten? WBTC=", balance_in_wbtc);
         balance_in_wbtc = IERC20(WBTC).balanceOf(me);
-        console.log("After 2nd liquidation WBTC Balance, is me different than sender? WBTC=", balance_in_wbtc);
+        console.log("After 2nd liquidation WBTC Balance, is it added or overwritten? WBTC=", balance_in_wbtc);
+        balance_in_wbtc = IERC20(USDT).balanceOf(me);
+        console.log("After 2nd liquidation WBTC Balance, is me different than sender? USDT=", balance_in_wbtc);
+        console.log("reserves_wbtc=",reserves_wbtc);
+        console.log("reserves_weth=",reserves_weth);
         //console.log("amount1=", amount1);
         
         // // 2.2 swap WBTC for other things or repay directly
