@@ -329,9 +329,9 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 healthFactor;
         uint256 Collateral_ETH;
         uint256 Debt_ETH;
-        uint256 availableBorrowsETH;
-        uint256 LqThrshld;
-        uint256 ltv;
+        //uint256 availableBorrowsETH;
+        uint LqThrshld;
+        uint ltv;
 
         (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
