@@ -153,6 +153,7 @@ interface IUniswapV2Router02 {
 
 contract LiquidationOperator is IUniswapV2Callee {
     uint8 public constant health_factor_decimals = 18;
+    uint256 public repay1=0;
 
     // define constants used in the contract including ERC-20 tokens, Uniswap Pairs, Aave lending pools, etc. */
     address target_address = 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F; // loan of USDT collateralized with WBTC
@@ -286,6 +287,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         IWETH(WETH).withdraw(weth_balance);
         payable(msg.sender).transfer(weth_balance);
         console.log("now after actual transformation, my balance in WETH=",IERC20(WETH).balanceOf(me));
+        console.log("in WBTC=", balance_in_wbtc);
         msg.sender.call{value: weth_balance}("");
 
     }
@@ -316,8 +318,10 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
         console.log("now we have just entered the uniswap call we don't have any WBTC  before liquidation balance is zero = %d tokens", balance_in_wbtc);
+        
+        /*
         //1st liquidation
-        uint256 repay1=97711111111;
+        repay1=97711111111;
         console.log("1st repay=",repay1);
         IERC20(USDT).approve(address(lending_pool), repay1);
         (reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
@@ -340,7 +344,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("The total debt is %d", Debt_ETH/1e18);
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
-        }
+        } */
         
         
         balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
