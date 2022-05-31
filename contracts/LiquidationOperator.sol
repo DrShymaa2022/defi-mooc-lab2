@@ -256,8 +256,10 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("LTV= ", ltv);
         uint256 usdt_amount_in_eth = 1799900000000; //the no I wrote is by adding the 1st repay value
         console.log("Amount to borrow in USDT is %s tokens", usdt_amount_in_eth);
+        console.log("let's check it is really there ? USDT =",IERC20(USDT).balanceOf(me));
+      
         weth_usdt_uniswap.swap(0, usdt_amount_in_eth, me, "not null for flash swap");
-        console.log("back from flash swap call; ie finished");
+        console.log("back from flash swap call; ie finished, I supposed to have the remaining WBTC after paying the flashloan");
 
         uint256 balance_in_wbtc = IERC20(WBTC).balanceOf(me);
         console.log("balance in wbt =this is what remains in supposely my account after paying back the flashloan:");
@@ -285,12 +287,14 @@ contract LiquidationOperator is IUniswapV2Callee {
         uniswap_router.swapExactTokensForETH(balance_in_wbtc, 0, pair, msg.sender, block_number);
 
         uint256 weth_balance = IWETH(WETH).balanceOf(me);
-        console.log("now after actual transformation, my balance in WETH=",IERC20(WETH).balanceOf(me));
+        console.log("now after actual transformation, my balance in WETH=",IERC20(pair[1]).balanceOf(me));
+        console.log("weth-balance=",weth_balance);
         IWETH(WETH).withdraw(weth_balance);
         payable(msg.sender).transfer(weth_balance);
         console.log("now after actual transformation, my balance in WETH=",IERC20(WETH).balanceOf(me));
         console.log("in WBTC=", IERC20(WBTC).balanceOf(me));
-        msg.sender.call{value: weth_balance}("");
+        console.log("weth-balance=",weth_balance);
+        //msg.sender.call{value: weth_balance}("");
 
     }
 
