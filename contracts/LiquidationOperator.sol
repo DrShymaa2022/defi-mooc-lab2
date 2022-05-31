@@ -326,7 +326,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("Now after 1st liquidation WBTC balance=", balance_in_wbtc);
         
         //2nd liquidation
-        uint256 healthFactor;
+       { uint256 healthFactor;
         uint256 Collateral_ETH;
         uint256 Debt_ETH;
         //uint256 availableBorrowsETH;
@@ -340,7 +340,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("The total debt is %d", Debt_ETH/1e18);
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
-        
+        }
         
         
         balance_in_wbtc = IERC20(WBTC).balanceOf(sender);
