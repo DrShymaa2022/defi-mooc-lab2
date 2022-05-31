@@ -162,9 +162,9 @@ contract LiquidationOperator is IUniswapV2Callee {
     address me = address(this);
     
     // mainnet address, for other addresses: https://docs.aave.com/developers/developing-on-aave/deployed-contract-instances
-    //ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8));     
+    ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8));     
     ILendingPool lending_pool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
-    //ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
+    ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     IUniswapV2Router02 uniswap_router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
 
 
@@ -173,9 +173,9 @@ contract LiquidationOperator is IUniswapV2Callee {
     address WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     IUniswapV2Factory uni_factory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
-    IUniswapV2Factory sushi_factory = IUniswapV2Factory(0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac);
+    //IUniswapV2Factory sushi_factory = IUniswapV2Factory(0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac);
     IUniswapV2Pair weth_usdt_uniswap = IUniswapV2Pair(uni_factory.getPair(WETH, USDT));
-    IUniswapV2Pair weth_wbtc_sushiswap = IUniswapV2Pair(sushi_factory.getPair(WETH, WBTC));
+    //IUniswapV2Pair weth_wbtc_sushiswap = IUniswapV2Pair(sushi_factory.getPair(WETH, WBTC));
 
     // some helper function, it is totally fine if you can finish the lab without using these function
     // https://github.com/Uniswap/v2-periphery/blob/master/contracts/libraries/UniswapV2Library.sol
@@ -240,10 +240,19 @@ contract LiquidationOperator is IUniswapV2Callee {
         // so we should borrow USDT using Uniswap
 
         uint256 healthFactor;
+        uint256 Collateral_ETH;
+        uint256 Debt_ETH;
+        uint256 availableBorrowsETH;
+        uint256 LqThrshld;
+        uint256 ltv;
 
-        (, , , , , healthFactor) = lending_pool.getUserAccountData(target_address);
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lending_pool.getUserAccountData(target_address);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         console.log("position is liquitable with HF=",healthFactor);
+        console.log("total collateral value in ETH=",Collateral_ETH);
+        console.log("The total debt is %d", Debt_ETH/1e18);
+        console.log("Liquidation Threshold = %d", LqThrshld);
+        console.log("LTV= ", ltv);
         uint256 usdt_amount_in_eth = 1811100000000; //1756100000000; the no I wrote is by adding the 1st repay value
         console.log("Amount to borrow in USDT is %s tokens", usdt_amount_in_eth);
         weth_usdt_uniswap.swap(0, usdt_amount_in_eth, me, "not null for flash swap");
@@ -273,8 +282,10 @@ contract LiquidationOperator is IUniswapV2Callee {
         uniswap_router.swapExactTokensForETH(balance_in_wbtc, 0, pair, msg.sender, block_number);
 
         uint256 weth_balance = IWETH(WETH).balanceOf(me);
+        console.log("now after actual transformation, my balance in WETH=",IERC20(WETH).balanceOf(me));
         IWETH(WETH).withdraw(weth_balance);
         payable(msg.sender).transfer(weth_balance);
+        console.log("now after actual transformation, my balance in WETH=",IERC20(WETH).balanceOf(me));
         msg.sender.call{value: weth_balance}("");
 
     }
