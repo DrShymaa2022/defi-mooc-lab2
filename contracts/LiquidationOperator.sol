@@ -373,6 +373,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("After 2nd liquidation USDT Balance, is me different than sender? USDT=", balance_in_wbtc);
         balance_in_wbtc = IERC20(WETH).balanceOf(me);
         console.log("After 2nd liquidation WETH Balance, is me different than sender? WETH=", balance_in_wbtc);
+        ( reserves_wbtc, reserves_weth, ) = IUniswapV2Pair(msg.sender).getReserves();
         console.log("reserves_wbtc=",reserves_wbtc);
         console.log("reserves_weth=",reserves_weth);
        
@@ -390,9 +391,9 @@ contract LiquidationOperator is IUniswapV2Callee {
         address[] memory pair = new address[](2);
         pair[0] = address(WBTC);
         pair[1] = address(WETH);
-        uint256 amountIn = getAmountIn(amount1, reserves_wbtc, reserves_weth);
+        uint256 amountIn = getAmountIn(amount1, IERC20(WBTC).balanceOf(me), IERC20(WETH).balanceOf(me));
         console.log("amountIn=", amountIn);
-        amountIn = getAmountIn(amount1, IERC20(WBTC).balanceOf(me), IERC20(WETH).balanceOf(me));
+        amountIn = getAmountIn(amount1, reserves_wbtc, reserves_weth);
         console.log("amountIn=",amountIn);
         
         console.log("Routing for exact swap");
