@@ -283,7 +283,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=97711111111;
+        uint112 repay1=100011111111;
         console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -295,8 +295,8 @@ contract LiquidationOperator is IUniswapV2Callee {
             repay1,
             false
         );
-        (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
-        console.log("position is still liquitable after 1st step, HF=", healthFactor);
+       // (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
+       // console.log("position is still liquitable after 1st step, HF=", healthFactor);
         
         //2nd liquidation
         /*WBTC.approve(address(router), 2**256 - 1);
