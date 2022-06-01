@@ -290,7 +290,7 @@ contract LiquidationOperator is IUniswapV2Callee {
             address(WBTC),
             address(USDT),
             rekt_user,
-            repay11,
+            repay1,
             false
         );
         WBTC.approve(address(router), 2**256 - 1);
