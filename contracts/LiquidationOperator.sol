@@ -327,7 +327,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
         path[1] = address(WETH);
-        amountIn = getAmountIn(amount1, w_btc, w_eth);
+        uint256 amountIn = getAmountIn(amount1, w_btc, w_eth);
         console.log("amountIn=",amountIn);
         router.swapTokensForExactTokens(
             amountIn,
