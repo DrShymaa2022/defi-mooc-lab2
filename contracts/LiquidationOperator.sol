@@ -161,6 +161,7 @@ interface ILendingPoolAddressesProvider {
 
 contract LiquidationOperator is IUniswapV2Callee {
     uint8 public constant health_factor_decimals = 18;
+    uint256 healthFactor;
 
     address rekt_user = 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F;
     uint64 block_num = 1621761058;
@@ -188,8 +189,7 @@ contract LiquidationOperator is IUniswapV2Callee {
     IUniswapV2Pair pair_WETH_USDT =
         IUniswapV2Pair(factory.getPair(address(WETH), address(USDT)));
 
-    //    IUniswapV2Pair pair_WBTC_WETH = IUniswapV2Pair(factory.getPair(address(WBTC), address(WETH)));
-    //    IUniswapV2Pair pair_DAI_USDT  = IUniswapV2Pair(factory.getPair(address(DAI), address(USDT)));
+   
 
     // some helper function, it is totally fine if you can finish the lab without using these function
     // https://github.com/Uniswap/v2-periphery/blob/master/contracts/libraries/UniswapV2Library.sol
@@ -236,11 +236,11 @@ contract LiquidationOperator is IUniswapV2Callee {
     // required by the testing script, entry for your liquidation call
     function operate() external {
         // 0. security checks and initializing variables
-        uint256 healthFactor;
+        //uint256 healthFactor; //commented because defined above as global var
 
         // 1. get the target user account data & make sure it is liquidatable
         (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
-
+        console.log("HF=",healthFactor);
         require(healthFactor < 10**18, "Health factor is not < 1");
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
@@ -254,6 +254,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         pair_WETH_USDT.swap(0, debtToCoverUSDT, address(this), "_");
 
         uint256 balance = WBTC.balanceOf(address(this));
+        console.log("WBTC balalnce=", balance);
 
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
@@ -262,6 +263,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         router.swapExactTokensForETH(balance, 0, path, msg.sender, block_num);
 
         uint256 balanceWETH = WETH.balanceOf(address(this));
+        console.log("balanceWETH=", balanceWETH);
         WETH.withdraw(balanceWETH);
 
         // 3. Convert the profit into ETH and send back to sender
@@ -285,7 +287,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
-            .getReserves();
+            .getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
         lendingPool.liquidationCall(
             address(WBTC),
             address(USDT),
@@ -293,7 +295,11 @@ contract LiquidationOperator is IUniswapV2Callee {
             repay1,
             false
         );
-        WBTC.approve(address(router), 2**256 - 1);
+        (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
+        console.log("position is still liquitable after 1st step, HF=", healthFactor);
+        
+        //2nd liquidation
+        /*WBTC.approve(address(router), 2**256 - 1);
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
         path[1] = address(WETH);
@@ -305,8 +311,8 @@ contract LiquidationOperator is IUniswapV2Callee {
             path,
             msg.sender,
             block_num
-        );
-        USDT.approve(address(lendingPool), 2**256 - 1);
+        );*/
+        USDT.approve(address(lendingPool), 2**256 - 1); //now in the 2nd step we push the liquidation to its max possible value
         ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();
         lendingPool.liquidationCall(
@@ -318,7 +324,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         );
 
         WBTC.approve(address(router), 2**256 - 1);
-        //address[] memory path = new address[](2);
+        address[] memory path = new address[](2);
         path[0] = address(WBTC);
         path[1] = address(WETH);
         amountIn = getAmountIn(amount1, w_btc, w_eth);
