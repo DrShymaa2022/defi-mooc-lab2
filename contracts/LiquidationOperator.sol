@@ -244,7 +244,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         require(healthFactor < 10**18, "Health factor is not < 1");
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 1750000000000;
+        uint256 debtToCoverUSDT = 1799000000000;
 
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -281,22 +281,47 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        USDT.approve(address(lendingPool), 2**256 - 1);
+        repay1=97711111111;
+        console.log("1st repay=",repay1);
+        USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();
         lendingPool.liquidationCall(
             address(WBTC),
             address(USDT),
             rekt_user,
-            amount1,
+            repay11,
             false
         );
-
         WBTC.approve(address(router), 2**256 - 1);
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
         path[1] = address(WETH);
         uint256 amountIn = getAmountIn(amount1, w_btc, w_eth);
+        console.log("amountIn=",amountIn);
+        router.swapTokensForExactTokens(
+            amountIn,
+            2**256 - 1,
+            path,
+            msg.sender,
+            block_num
+        );
+        USDT.approve(address(lendingPool), 2**256 - 1);
+        ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
+            .getReserves();
+        lendingPool.liquidationCall(
+            address(WBTC),
+            address(USDT),
+            rekt_user,
+            amount1-repay1,
+            false
+        );
+
+        WBTC.approve(address(router), 2**256 - 1);
+        //address[] memory path = new address[](2);
+        path[0] = address(WBTC);
+        path[1] = address(WETH);
+        amountIn = getAmountIn(amount1, w_btc, w_eth);
         console.log("amountIn=",amountIn);
         router.swapTokensForExactTokens(
             amountIn,
