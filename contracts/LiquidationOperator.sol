@@ -281,7 +281,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        repay1=97711111111;
+        uint112 repay1=97711111111;
         console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
