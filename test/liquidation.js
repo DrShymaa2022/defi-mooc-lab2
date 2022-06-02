@@ -50,6 +50,8 @@ describe("Liquidation", function () {
 
     const profit = afterLiquidationBalance.sub(beforeLiquidationBalance);
     console.log("Profit", utils.formatEther(profit), "ETH");
+    console.log("this was profit of only last liquidation step, we have ", liquidationEvents.length, "  liquidation steps in this contract code");
+    if(liquidationEvents.length > 1) console.log("So total profit =",afterLiquidationBalance, "ETH");
 
     expect(profit.gt(BigNumber.from(0)), "not profitable").to.be.true;
     writeFile('profit.txt', String(utils.formatEther(profit)), function (err) {console.log("failed to write profit.txt: %s", err)});
