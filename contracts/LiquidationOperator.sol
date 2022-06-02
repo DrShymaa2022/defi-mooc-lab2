@@ -314,7 +314,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint LqThrshld;
         uint ltv;
 
-        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lending_pool.getUserAccountData(target_address);
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(rekt_user);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor);
         console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18);
@@ -342,12 +342,11 @@ contract LiquidationOperator is IUniswapV2Callee {
         {  //checking the result of the 1st liquidation step
         
         uint256 Collateral_ETH;
-        uint256 Debt_ETH;
-        
+        uint256 Debt_ETH; 
         uint LqThrshld;
         uint ltv;
 
-        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lending_pool.getUserAccountData(target_address);
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(rekt_user);
         //require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         console.log("position should be not liquitable by now HF=",healthFactor);
         console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18);
