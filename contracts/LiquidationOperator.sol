@@ -284,9 +284,12 @@ contract LiquidationOperator is IUniswapV2Callee {
         bytes calldata
     ) external override {
         uint112 repay1=100011111111;
+       
+       // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
         repay1=0; */
+        
         console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -298,12 +301,28 @@ contract LiquidationOperator is IUniswapV2Callee {
             repay1,
             false
         );
-        (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
-        console.log("position is still liquitable after 1st step, HF=", healthFactor);
+        //checking what we had earned in 1st step
         uint256 balance = WBTC.balanceOf(address(WBTC));
-        console.log("and we liquidated by now", balance, "WBTC");
-         console.log(" with address of this=", WBTC.balanceOf(address(this));
-        //2nd liquidation
+        console.log("After the 1st step we liquidated by now", balance, "WBTC");
+         console.log(" with address of this=", WBTC.balanceOf(address(this)), "WBTC");
+
+        {  //checking the result of the 1st liquidation step
+        // healthFactor already defined as global
+        uint256 Collateral_ETH;
+        uint256 Debt_ETH;
+        //uint256 availableBorrowsETH;
+        uint LqThrshld;
+        uint ltv;
+
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lending_pool.getUserAccountData(target_address);
+        require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
+        if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor);
+        console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18);
+        console.log("The total debt is %d", Debt_ETH/1e18);
+        console.log("Liquidation Threshold = %d", LqThrshld);
+        console.log("LTV= ", ltv);
+        }        
+                //2nd liquidation
        
         USDT.approve(address(lendingPool), 2**256 - 1); //now in the 2nd step we push the liquidation to its max possible value
         ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -316,8 +335,28 @@ contract LiquidationOperator is IUniswapV2Callee {
             false
         );
         balance = WBTC.balanceOf(address(WBTC));
+        console.log("      ");
         console.log("after 2nd liquidation WBTC balance=", balance);
-        console.log(" with address of this=", WBTC.balanceOf(address(this));
+        console.log(" with address of this=", WBTC.balanceOf(address(this)),"WBTC");
+        
+        {  //checking the result of the 1st liquidation step
+        
+        uint256 Collateral_ETH;
+        uint256 Debt_ETH;
+        
+        uint LqThrshld;
+        uint ltv;
+
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lending_pool.getUserAccountData(target_address);
+        //require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
+        console.log("position should be not liquitable by now HF=",healthFactor);
+        console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18);
+        console.log("The total debt is %d", Debt_ETH/1e18);
+        console.log("Liquidation Threshold = %d", LqThrshld);
+        console.log("LTV= ", ltv);
+        }
+        
+        //now routing
         WBTC.approve(address(router), 2**256 - 1);
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
