@@ -284,6 +284,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         bytes calldata
     ) external override {
         uint112 repay1=100011111111;
+        repay1=0; /*
         console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -319,7 +320,7 @@ contract LiquidationOperator is IUniswapV2Callee {
             address(WBTC),
             address(USDT),
             rekt_user,
-            amount1,
+            amount1-repay1,
             false
         );
 
@@ -328,7 +329,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         path[0] = address(WBTC);
         path[1] = address(WETH);
         uint256 amountIn = getAmountIn(amount1, w_btc, w_eth);
-        console.log("amountIn=",amountIn);
+        console.log("amountIn with 1 liquidation step=",amountIn);
         router.swapTokensForExactTokens(
             amountIn,
             2**256 - 1,
