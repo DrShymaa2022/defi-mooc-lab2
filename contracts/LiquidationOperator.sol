@@ -244,7 +244,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         require(healthFactor < 10**18, "Health factor is not < 1");
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 1799000000000;
+        uint256 debtToCoverUSDT = 1789000000000;
 
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -284,9 +284,9 @@ contract LiquidationOperator is IUniswapV2Callee {
         bytes calldata
     ) external override {
         uint112 repay1=100011111111;
-        (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
+       /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
-        repay1=0; /*
+        repay1=0; */
         console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -298,23 +298,13 @@ contract LiquidationOperator is IUniswapV2Callee {
             repay1,
             false
         );
-       // (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
-       // console.log("position is still liquitable after 1st step, HF=", healthFactor);
-        
+        (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
+        console.log("position is still liquitable after 1st step, HF=", healthFactor);
+        uint256 balance = WBTC.balanceOf(address(WBTC));
+        console.log("and we liquidated by now", balance, "WBTC");
+         console.log(" with address of this=", WBTC.balanceOf(address(this));
         //2nd liquidation
-        /*WBTC.approve(address(router), 2**256 - 1);
-        address[] memory path = new address[](2);
-        path[0] = address(WBTC);
-        path[1] = address(WETH);
-        uint256 amountIn = getAmountIn(amount1, w_btc, w_eth);
-        console.log("amountIn=",amountIn);
-        router.swapTokensForExactTokens(
-            amountIn,
-            2**256 - 1,
-            path,
-            msg.sender,
-            block_num
-        );*/
+       
         USDT.approve(address(lendingPool), 2**256 - 1); //now in the 2nd step we push the liquidation to its max possible value
         ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();
@@ -325,13 +315,15 @@ contract LiquidationOperator is IUniswapV2Callee {
             amount1-repay1,
             false
         );
-
+        balance = WBTC.balanceOf(address(WBTC));
+        console.log("after 2nd liquidation WBTC balance=", balance);
+        console.log(" with address of this=", WBTC.balanceOf(address(this));
         WBTC.approve(address(router), 2**256 - 1);
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
         path[1] = address(WETH);
         uint256 amountIn = getAmountIn(amount1, w_btc, w_eth);
-        console.log("amountIn with 1 liquidation step=",amountIn);
+        console.log("amountIn=",amountIn);
         router.swapTokensForExactTokens(
             amountIn,
             2**256 - 1,
