@@ -284,6 +284,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         bytes calldata
     ) external override {
         uint112 repay1=100011111111;
+        (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
+            .getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
         repay1=0; /*
         console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
