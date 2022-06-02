@@ -172,7 +172,7 @@ contract LiquidationOperator is IUniswapV2Callee {
     IWETH WETH = IWETH(router.WETH());
     IERC20 WBTC = IERC20(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
     IERC20 USDT = IERC20(0xdAC17F958D2ee523a2206206994597C13D831ec7);
-    IERC20 DAI = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+  //  IERC20 DAI = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
 
     ILendingPoolAddressesProvider provider =
         ILendingPoolAddressesProvider(
@@ -319,7 +319,7 @@ contract LiquidationOperator is IUniswapV2Callee {
             address(WBTC),
             address(USDT),
             rekt_user,
-            amount1-repay1,
+            amount1,
             false
         );
 
