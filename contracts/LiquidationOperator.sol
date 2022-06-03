@@ -256,7 +256,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 1889000000000;
+        uint256 debtToCoverUSDT = 1899000000000;
 
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -268,7 +268,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 balance = WBTC.balanceOf(address(this));
         console.log("WBTC balalnce=", balance);
 
-        /*address[] memory path = new address[](2);
+        address[] memory path = new address[](2);
         path[0] = address(WBTC);
         path[1] = address(WETH);
         router.swapExactTokensForETH(balance, 0, path, msg.sender, block_num);
@@ -281,8 +281,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         // 3. Convert the profit into ETH and send back to sender
         payable(msg.sender).transfer(balanceWETH);
         console.log("balanceWETH=", balanceWETH);
-        //payable(msg.sender).transfer(balance);
-        balanceWETH = WETH.balanceOf(address(this));
+        /* balanceWETH = WETH.balanceOf(address(this));
         console.log("balanceWETH=", balanceWETH); */
        
     }
