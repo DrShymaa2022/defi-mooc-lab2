@@ -241,23 +241,22 @@ contract LiquidationOperator is IUniswapV2Callee {
         // 1. get the target user account data & make sure it is liquidatable
         uint256 Collateral_ETH;
         uint256 Debt_ETH;
-        uint256 availableBorrowsETH;
         uint LqThrshld;
         uint ltv;
 
-        (Collateral_ETH,Debt_ETH ,availableBorrowsETH ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(Lq_victim);
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(Lq_victim);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         
         if(healthFactor < 1e18) console.log("position is liquitable with HF=",healthFactor);
         console.log("total collateral value=",Collateral_ETH/1e18, "ETH");
         console.log("The total debt=", Debt_ETH/1e18, "ETH");
-        console.log("availableBorrowsETH=",availableBorrowsETH,"ETH");
+        
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 1789000000000;
+        uint256 debtToCoverUSDT = 1889000000000;
 
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -274,14 +273,15 @@ contract LiquidationOperator is IUniswapV2Callee {
         path[1] = address(WETH);
         router.swapExactTokensForETH(balance, 0, path, msg.sender, block_num);
 
-        uint256 balanceWETH = WETH.balanceOf(address(this));
+       // uint256 balanceWETH = WETH.balanceOf(address(this));
+        uint256 balanceWETH = WETH.balanceOf(path[1]);
         console.log("balanceWETH=", balanceWETH);
         WETH.withdraw(balanceWETH);
 
         // 3. Convert the profit into ETH and send back to sender
         payable(msg.sender).transfer(balanceWETH);
         console.log("balanceWETH=", balanceWETH);
-        payable(msg.sender).transfer(balance);
+        //payable(msg.sender).transfer(balance);
         balanceWETH = WETH.balanceOf(address(this));
         console.log("balanceWETH=", balanceWETH);
        
@@ -294,7 +294,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=140011111111;
+        uint112 repay1=180011111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -320,7 +320,6 @@ contract LiquidationOperator is IUniswapV2Callee {
         // healthFactor already defined as global
         uint256 Collateral_ETH;
         uint256 Debt_ETH;
-        uint256 availableBorrowsETH;
         uint LqThrshld;
         uint ltv;
 
@@ -329,7 +328,6 @@ contract LiquidationOperator is IUniswapV2Callee {
         if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor);
         console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18);
         console.log("The total debt is %d", Debt_ETH/1e18, "ETH");
-        console.log("availableBorrowsETH=",availableBorrowsETH,"ETH");
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
         }        
@@ -358,7 +356,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint LqThrshld;
         uint ltv;
 
-        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(Lq_victim);
+        (Collateral_ETH,Debt_ETH ,availableBorrowsETH,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(Lq_victim);
         //require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         console.log("position should be not liquitable by now HF=",healthFactor);
         console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18,"ETH");
