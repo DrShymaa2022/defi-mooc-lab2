@@ -163,7 +163,7 @@ contract LiquidationOperator is IUniswapV2Callee {
     uint8 public constant health_factor_decimals = 18;
     uint256 healthFactor;
 
-    address rekt_user = 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F;
+    address Lq_victim = 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F;
     uint64 block_num = 1621761058;
 
     // https://docs.uniswap.org/protocol/V2/reference/smart-contracts/router-02.
@@ -239,9 +239,22 @@ contract LiquidationOperator is IUniswapV2Callee {
         //uint256 healthFactor; //commented because defined above as global var
 
         // 1. get the target user account data & make sure it is liquidatable
-        (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
-        console.log("HF=",healthFactor);
-        require(healthFactor < 10**18, "Health factor is not < 1");
+        uint256 Collateral_ETH;
+        uint256 Debt_ETH;
+        uint256 availableBorrowsETH;
+        uint LqThrshld;
+        uint ltv;
+
+        (Collateral_ETH,Debt_ETH ,availableBorrowsETH ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(Lq_victim);
+        require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
+        
+        if(healthFactor < 1e18) console.log("position is liquitable with HF=",healthFactor);
+        console.log("total collateral value=",Collateral_ETH/1e18, "ETH");
+        console.log("The total debt=", Debt_ETH/1e18, "ETH");
+        console.log("availableBorrowsETH=",availableBorrowsETH,"ETH");
+        console.log("Liquidation Threshold = %d", LqThrshld);
+        console.log("LTV= ", ltv);
+        
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
         uint256 debtToCoverUSDT = 1789000000000;
@@ -258,7 +271,6 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
-
         path[1] = address(WETH);
         router.swapExactTokensForETH(balance, 0, path, msg.sender, block_num);
 
@@ -268,12 +280,11 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         // 3. Convert the profit into ETH and send back to sender
         payable(msg.sender).transfer(balanceWETH);
-
-        (, , , , , healthFactor) = lendingPool.getUserAccountData(rekt_user);
-        require(
-            healthFactor > 10**18,
-            "Health factor must be > 1 after liquidation"
-        );
+        console.log("balanceWETH=", balanceWETH);
+        payable(msg.sender).transfer(balance);
+        balanceWETH = WETH.balanceOf(address(this));
+        console.log("balanceWETH=", balanceWETH);
+       
     }
 
     // required by the swap
@@ -283,7 +294,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=100011111111;
+        uint112 repay1=140011111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -292,12 +303,11 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
-        (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
-            .getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
+        (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender).getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
         lendingPool.liquidationCall(
             address(WBTC),
             address(USDT),
-            rekt_user,
+            Lq_victim,
             repay1,
             false
         );
@@ -310,15 +320,16 @@ contract LiquidationOperator is IUniswapV2Callee {
         // healthFactor already defined as global
         uint256 Collateral_ETH;
         uint256 Debt_ETH;
-        //uint256 availableBorrowsETH;
+        uint256 availableBorrowsETH;
         uint LqThrshld;
         uint ltv;
 
-        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(rekt_user);
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(Lq_victim);
         require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         if(healthFactor < 1e18) console.log("position is still liquitable proceed to 2nd liquidation with HF=",healthFactor);
         console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18);
-        console.log("The total debt is %d", Debt_ETH/1e18);
+        console.log("The total debt is %d", Debt_ETH/1e18, "ETH");
+        console.log("availableBorrowsETH=",availableBorrowsETH,"ETH");
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
         }        
@@ -330,7 +341,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         lendingPool.liquidationCall(
             address(WBTC),
             address(USDT),
-            rekt_user,
+            Lq_victim,
             amount1-repay1,
             false
         );
@@ -343,14 +354,16 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         uint256 Collateral_ETH;
         uint256 Debt_ETH; 
+        uint256 availableBorrowsETH;
         uint LqThrshld;
         uint ltv;
 
-        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(rekt_user);
+        (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(Lq_victim);
         //require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         console.log("position should be not liquitable by now HF=",healthFactor);
-        console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18);
-        console.log("The total debt is %d", Debt_ETH/1e18);
+        console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18,"ETH");
+        console.log("The total debt is %d", Debt_ETH/1e18,"ETH");
+        console.log("availableBorrowsETH=",availableBorrowsETH,"ETH");
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
         }
