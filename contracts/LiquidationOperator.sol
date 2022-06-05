@@ -256,7 +256,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 1799900000000;
+        uint256 debtToCoverUSDT = 1790000000000;
 
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -293,7 +293,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=130011111111;
+        uint112 repay1=119011111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -371,7 +371,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();
         uint256 amountIn = getAmountIn(amount1, w_btc, w_eth);
-        console.log("amountIn=",amountIn);
+        console.log("amountIn=",amountIn);  //this is what I will payback to uniswap, it could be larger with less profit If I borrowed extra money originally, this will cause extra unnecessary 3/1000 pool fee that may affect my profit
         router.swapTokensForExactTokens(
             amountIn,
             2**256 - 1,
