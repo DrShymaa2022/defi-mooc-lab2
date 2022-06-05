@@ -256,8 +256,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
-        collateral_diff=Collateral_ETH/1e9;
-        debt_diff=Debt_ETH/1e9;
+        collateral_diff=Collateral_ETH;
+        debt_diff=Debt_ETH;
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
@@ -333,8 +333,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
         
-        collateral_diff=collateral_diff-(Collateral_ETH/1e9);
-        debt_diff=debt_diff-(Debt_ETH/1e9);
+        collateral_diff=collateral_diff-Collateral_ETH;
+        debt_diff=debt_diff-Debt_ETH;
         }        
                 //2nd liquidation
        
@@ -368,14 +368,14 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
         
-        collateral_diff=collateral_diff-(Collateral_ETH/1e9);
-        debt_diff= debt_diff-(Debt_ETH/1e9);
+        collateral_diff=collateral_diff-Collateral_ETH;
+        debt_diff= debt_diff-Debt_ETH;
         }
         
         console.log("  ");
-        console.log("So we liquidated in both steps; difference in collateral=",collateral_diff/1e9,"ETH");
-        console.log("From them the debt is reduced by; ie, difference in debt=",debt_diff/1e9,"ETH");
-        console.log("The difference between the two, is what we gained as a liquidator before reducing the pool ratio=",collateral_diff/1e9-debt_diff/1e9,"ETH");
+        console.log("So we liquidated in both steps; difference in collateral=",collateral_diff/1e18,"ETH");
+        console.log("From them the debt is reduced by; ie, difference in debt=",debt_diff/1e18,"ETH");
+        console.log("The difference between the two, is what we gained as a liquidator before reducing the pool ratio=",(collateral_diff-debt_diff)/1e18,"ETH");
        
        //now routing
         WBTC.approve(address(router), 2**256 - 1);
