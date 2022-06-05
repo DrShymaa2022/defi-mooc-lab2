@@ -296,7 +296,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=199911111111;
+        uint112 repay1=191111111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -375,7 +375,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("  ");
         console.log("So we liquidated in both steps; difference in collateral=",collateral_diff/1e18,"ETH");
         console.log("From them the debt is reduced by; ie, difference in debt=",debt_diff/1e18,"ETH");
-        console.log("The difference between the two, is what we gained as a liquidator before reducing the pool ratio=",(collateral_diff-debt_diff)/1e18,"ETH");
+        uint256 gain=collateral_diff-debt_diff;
+        console.log("The difference between the two, is what we gained as a liquidator before reducing the pool ratio=", gain/1e18,"ETH");
        
        //now routing
         WBTC.approve(address(router), 2**256 - 1);
