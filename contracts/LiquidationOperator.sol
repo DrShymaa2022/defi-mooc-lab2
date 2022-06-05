@@ -162,9 +162,12 @@ interface ILendingPoolAddressesProvider {
 contract LiquidationOperator is IUniswapV2Callee {
     uint8 public constant health_factor_decimals = 18;
     uint256 healthFactor;
+    uint64 collateral_diff;
+    uint64 debt_diff;
 
     address Lq_victim = 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F;
     uint64 block_num = 1621761058;
+    
 
     // https://docs.uniswap.org/protocol/V2/reference/smart-contracts/router-02.
     IUniswapV2Router02 router =
@@ -253,6 +256,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
+        collateral_diff=Collateral_ETH/1e9;
+        debt_diff=Debt_ETH/1e9;
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
@@ -291,7 +296,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=119011111111;
+        uint112 repay1=199911111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -327,6 +332,9 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("The total debt is %d", Debt_ETH/1e18, "ETH");
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
+        
+        collateral_diff=collateral_diff-(Collateral_ETH/1e9);
+        debt_diff=debt_diff-(Debt_ETH/1e9);
         }        
                 //2nd liquidation
        
@@ -355,13 +363,21 @@ contract LiquidationOperator is IUniswapV2Callee {
         (Collateral_ETH,Debt_ETH , ,LqThrshld ,ltv , healthFactor) = lendingPool.getUserAccountData(Lq_victim);
         //require(healthFactor < 1e18, "health factor should be < 1 before liquidation");
         console.log("position should be not liquitable by now HF=",healthFactor);
-        console.log("total collateral value in ETH after 1st lquidation=",Collateral_ETH/1e18,"ETH");
+        console.log("total collateral value in ETH after 2nd lquidation=",Collateral_ETH/1e18,"ETH");
         console.log("The total debt is %d", Debt_ETH/1e18,"ETH");
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
+        
+        collateral_diff=collateral_diff-(Collateral_ETH/1e9);
+        debt_diff= debt_diff-(Debt_ETH/1e9);
         }
         
-        //now routing
+        console.log("  ");
+        console.log("So we liquidated in both steps; difference in collateral=",collateral_diff/1e9,"ETH");
+        console.log("From them the debt is reduced by; ie, difference in debt=",debt_diff/1e9,"ETH");
+        console.log("The difference between the two, is what we gained as a liquidator before reducing the pool ratio=",collateral_diff/1e9-debt_diff/1e9,"ETH");
+       
+       //now routing
         WBTC.approve(address(router), 2**256 - 1);
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
