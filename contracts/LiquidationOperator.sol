@@ -162,8 +162,8 @@ interface ILendingPoolAddressesProvider {
 contract LiquidationOperator is IUniswapV2Callee {
     uint8 public constant health_factor_decimals = 18;
     uint256 healthFactor;
-    uint64 collateral_diff;
-    uint64 debt_diff;
+    uint256 collateral_diff;
+    uint256 debt_diff;
 
     address Lq_victim = 0x59CE4a2AC5bC3f5F225439B2993b86B42f6d3e9F;
     uint64 block_num = 1621761058;
