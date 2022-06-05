@@ -274,13 +274,11 @@ contract LiquidationOperator is IUniswapV2Callee {
         router.swapExactTokensForETH(balance, 0, path, msg.sender, block_num);
 
         uint256 balanceWETH = WETH.balanceOf(address(this)); //I think this means the router already transfered the balance from this to WBTC
-        //uint256 balanceWETH = WETH.balanceOf(path[1]);
-        console.log("balanceWETH=", balanceWETH);
         WETH.withdraw(balanceWETH);
 
         // 3. Convert the profit into ETH and send back to sender
         payable(msg.sender).transfer(balanceWETH);
-        console.log("balanceWETH=", balanceWETH);
+        
         /* balanceWETH = WETH.balanceOf(address(this));
         console.log("balanceWETH=", balanceWETH); */
        
