@@ -256,7 +256,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 1899000000000;
+        uint256 debtToCoverUSDT = 1799900000000;
 
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -273,7 +273,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         path[1] = address(WETH);
         router.swapExactTokensForETH(balance, 0, path, msg.sender, block_num);
 
-        uint256 balanceWETH = WETH.balanceOf(address(this));
+        uint256 balanceWETH = WETH.balanceOf(address(this)); //I think this means the router already transfered the balance from this to WBTC
         //uint256 balanceWETH = WETH.balanceOf(path[1]);
         console.log("balanceWETH=", balanceWETH);
         WETH.withdraw(balanceWETH);
@@ -293,7 +293,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=190011111111;
+        uint112 repay1=130011111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -347,7 +347,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("after 2nd liquidation WBTC balance=", balance);
         console.log(" with address of this=", WBTC.balanceOf(address(this)),"WBTC");
         
-        {  //checking the result of the 1st liquidation step
+        {  //checking the result of the 2nd liquidation step
         
         uint256 Collateral_ETH;
         uint256 Debt_ETH; 
@@ -368,6 +368,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
         path[1] = address(WETH);
+        ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
+            .getReserves();
         uint256 amountIn = getAmountIn(amount1, w_btc, w_eth);
         console.log("amountIn=",amountIn);
         router.swapTokensForExactTokens(
