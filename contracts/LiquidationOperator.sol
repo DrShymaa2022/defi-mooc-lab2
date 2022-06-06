@@ -296,14 +296,14 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=190011111111;
+        uint112 repay1=199911111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
-       /* (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
+       (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
-        repay1=0; */
+        repay1=0; 
         
-        console.log("1st repay=",repay1);
+       /* console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender).getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
         lendingPool.liquidationCall(
@@ -335,7 +335,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         //collateral_diff=collateral_diff-Collateral_ETH;
         //debt_diff=debt_diff-Debt_ETH;
-        }        
+        } */
+        console.log(" a 1 step liquidation run to test the max liquidated collateral & gain in the 1 step case");
                 //2nd liquidation
        
         USDT.approve(address(lendingPool), 2**256 - 1); //now in the 2nd step we push the liquidation to its max possible value
