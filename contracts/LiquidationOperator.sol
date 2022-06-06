@@ -299,11 +299,11 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint112 repay1=199911111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
-       (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
+       /*(uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
-        repay1=0; 
+        repay1=0; */
         
-       /* console.log("1st repay=",repay1);
+        console.log("1st repay=",repay1);
         USDT.approve(address(lendingPool), repay1);
         (uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender).getReserves();    // this is just to check that uniswap has enough liquidity, ie. safety check
         lendingPool.liquidationCall(
@@ -316,7 +316,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         //checking what we had earned in 1st step
         uint256 balance = WBTC.balanceOf(address(WBTC));
         console.log("After the 1st step we liquidated by now", balance, "WBTC");
-         console.log(" with address of this=", WBTC.balanceOf(address(this)), "WBTC");
+        console.log(" with address of this=", WBTC.balanceOf(address(this)), "WBTC");
 
         {  //checking the result of the 1st liquidation step
         // healthFactor already defined as global
@@ -335,8 +335,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         //collateral_diff=collateral_diff-Collateral_ETH;
         //debt_diff=debt_diff-Debt_ETH;
-        } */
-        console.log(" a 1 step liquidation run to test the max liquidated collateral & gain in the 1 step case");
+        } 
+        //console.log(" a 1 step liquidation run to test the max liquidated collateral & gain in the 1 step case");
                 //2nd liquidation
        
         USDT.approve(address(lendingPool), 2**256 - 1); //now in the 2nd step we push the liquidation to its max possible value
@@ -349,7 +349,7 @@ contract LiquidationOperator is IUniswapV2Callee {
             amount1-repay1,
             false
         );
-        uint256 balance = WBTC.balanceOf(address(WBTC));
+        balance = WBTC.balanceOf(address(WBTC));
         console.log("      ");
         console.log("after 2nd liquidation WBTC balance=", balance);
         console.log(" with address of this=", WBTC.balanceOf(address(this)),"WBTC");
