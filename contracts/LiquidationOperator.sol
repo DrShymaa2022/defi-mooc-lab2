@@ -349,7 +349,7 @@ contract LiquidationOperator is IUniswapV2Callee {
             amount1-repay1,
             false
         );
-        balance = WBTC.balanceOf(address(WBTC));
+        uint256 balance = WBTC.balanceOf(address(WBTC));
         console.log("      ");
         console.log("after 2nd liquidation WBTC balance=", balance);
         console.log(" with address of this=", WBTC.balanceOf(address(this)),"WBTC");
