@@ -1,0 +1,71 @@
+
+> hardhat-project@ test /lab2
+
+> npx hardhat test
+
+
+Downloading compiler 0.8.7
+
+Compiling 2 files with 0.8.7
+
+Compilation finished successfully
+
+
+
+  Liquidation
+
+did we reach here?
+
+position is liquitable with HF= 993100606912132067
+
+total collateral value= 10630 ETH
+
+The total debt= 8093 ETH
+
+Liquidation Threshold = 7561
+
+LTV=  7082
+
+ a 1 step liquidation run to test the max liquidated collateral & gain in the 1 step case
+
+      
+
+after 2nd liquidation WBTC balance= 941397681
+
+ with address of this= 5689287880 WBTC
+
+position should be not liquitable by now HF= 1013104985547432409
+
+total collateral value in ETH after 2nd lquidation= 9684 ETH
+
+The total debt is 7233 ETH
+
+Liquidation Threshold = 7567
+
+LTV=  7090
+
+  
+
+So we liquidated in both steps; difference in collateral= 946 ETH
+
+From them the debt is reduced by; ie, difference in debt= 860 ETH
+
+The difference between the two, is what we gained as a liquidator before reducing the pool ratio= 86 ETH
+
+amountIn= 893587145258318241406
+
+WBTC balalnce= 272277356
+
+Profit 43.827775107004868152 ETH
+
+this was profit of only last liquidation step, we have  1   liquidation steps in this contract code
+
+    ✓ test (229977ms)
+
+failed to write profit.txt: null
+
+
+
+  1 passing (4m)
+
+
