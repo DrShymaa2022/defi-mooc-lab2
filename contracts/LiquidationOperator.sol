@@ -261,7 +261,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 2950000000000;
+        uint256 debtToCoverUSDT = 2990000000000;
         console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
@@ -272,18 +272,24 @@ contract LiquidationOperator is IUniswapV2Callee {
         pair_WETH_USDT.swap(0, debtToCoverUSDT, address(this), "_");
 
         uint256 balance = WBTC.balanceOf(address(this));
-        console.log("WBTC balalnce=", balance);
+        console.log("after coming back from flashswap WBTC balalnce=", balance);
 
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
         path[1] = address(WETH);
         router.swapExactTokensForETH(balance, 0, path, msg.sender, block_num);
+        console.log("Balances after swap for exact token:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
 
         uint256 balanceWETH = WETH.balanceOf(address(this)); //I think this means the router already transfered the balance from this to WBTC
         WETH.withdraw(balanceWETH);
+        console.log("Balances after withdraw:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
 
         // 3. Convert the profit into ETH and send back to sender
         payable(msg.sender).transfer(balanceWETH);
+        console.log("Balances after payable transfer:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
         
         /* balanceWETH = WETH.balanceOf(address(this));
         console.log("balanceWETH=", balanceWETH); */
@@ -297,7 +303,11 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=291111111111;
+       
+        console.log("Balances before liquidation:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+       
+       uint112 repay1=321111111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /*(uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -316,8 +326,9 @@ contract LiquidationOperator is IUniswapV2Callee {
         );
         //checking what we had earned in 1st step
         uint256 balance = WBTC.balanceOf(address(WBTC));
-        console.log("After the 1st step we liquidated by now", balance, "WBTC");
-        console.log(" with address of this=", WBTC.balanceOf(address(this)), "WBTC");
+        //console.log("After the 1st step we liquidated by now", balance, "WBTC");
+        console.log("Balances after 1st step:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
 
         {  //checking the result of the 1st liquidation step
         // healthFactor already defined as global
@@ -352,8 +363,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         );
         balance = WBTC.balanceOf(address(WBTC));
         console.log("      ");
-        console.log("after 2nd liquidation WBTC balance=", balance);
-        console.log(" with address of this=", WBTC.balanceOf(address(this)),"WBTC");
+        console.log("Balances after 2nd step:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
         
         {  //checking the result of the 2nd liquidation step
         
@@ -387,7 +398,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         path[1] = address(WETH);
         ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();
-        uint256 amountIn = getAmountIn( WBTC.balanceOf(address(this)), w_btc, w_eth);
+        uint256 amountIn = getAmountIn( amount1, w_btc, w_eth);
         console.log("amountIn=",amountIn);  //this is what I will payback to uniswap, it could be larger with less profit If I borrowed extra money originally, this will cause extra unnecessary 3/1000 pool fee that may affect my profit
         router.swapTokensForExactTokens(
             amountIn,
@@ -396,5 +407,8 @@ contract LiquidationOperator is IUniswapV2Callee {
             msg.sender,
             block_num
         );
+        console.log("Balances after routing:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+        console.log("-------------------------------------------------------------------------");
     }
 }
