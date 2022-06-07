@@ -256,17 +256,17 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
-        uint256 max = Collateral_ETH-LqThrshld;
+        /*uint256 max = Collateral_ETH-LqThrshld;
         max= max/2;
         console.log("max to be liquidated in 1 step= (Collateral_ETH- LqThrshld)/2 =", max/1e18);
         max=Collateral_ETH- max;
-        console.log("So, we succeeded in acheiving more liquidated value by 2 steps if the final Collateral_ETH was less than <", max/1e18);
+        console.log("So, we succeeded in acheiving more liquidated value by 2 steps if the final Collateral_ETH was less than <", max/1e18);*/
         collateral_diff=Collateral_ETH;
         debt_diff=Debt_ETH;
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 2930000000000;
+        uint256 debtToCoverUSDT = 2910000000000;
         console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
@@ -302,8 +302,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         path[0] = address(USDT);
         path[1] = address(WETH);
         router.swapExactTokensForETH(USDT.balanceOf(address(this)), 0, path, msg.sender, block_num);
-        WETH.withdraw(WETH.balanceOf(address(this)));
-        payable(msg.sender).transfer(WETH.balanceOf(address(this)));
+        WETH.withdraw(0);
+        payable(msg.sender).transfer(0);
         console.log("Balances after routing remaining USDT to ETH:");
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         console.log("  WETH=",WETH.balanceOf(address(this)));       
