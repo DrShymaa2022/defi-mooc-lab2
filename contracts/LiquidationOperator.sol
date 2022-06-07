@@ -315,7 +315,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         console.log("  WETH=",WETH.balanceOf(address(this)));
        
-       uint112 repay1=341111111111;
+       uint112 repay1=361111111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /*(uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
