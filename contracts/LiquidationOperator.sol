@@ -266,7 +266,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 2920000000000;
+        uint256 debtToCoverUSDT = 2930000000000;
         console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
@@ -289,9 +289,7 @@ contract LiquidationOperator is IUniswapV2Callee {
 
         uint256 balanceWETH = WETH.balanceOf(address(this)); //I think this means the router already transfered the balance from this to WBTC
         WETH.withdraw(balanceWETH);
-        console.log("Balances after withdraw:");
-        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
-        console.log("  WETH=",WETH.balanceOf(address(this)));
+        
 
         // 3. Convert the profit into ETH and send back to sender
         payable(msg.sender).transfer(balanceWETH);
@@ -299,9 +297,16 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         console.log("  WETH=",WETH.balanceOf(address(this)));
         
-        /* balanceWETH = WETH.balanceOf(address(this));
-        console.log("balanceWETH=", balanceWETH); */
-       
+        //we have to convert any remaining USD to ETH too, maybe possible inside the flashloan?
+        
+        path[0] = address(USDT);
+        path[1] = address(WETH);
+        router.swapExactTokensForETH(USDT.balanceOf(address(this)), 0, path, msg.sender, block_num);
+        WETH.withdraw(WETH.balanceOf(address(this)));
+        payable(msg.sender).transfer(WETH.balanceOf(address(this)));
+        console.log("Balances after routing remaining USDT to ETH:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=",WETH.balanceOf(address(this)));       
     }
 
     // required by the swap
