@@ -261,7 +261,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 1850000000000;
+        uint256 debtToCoverUSDT = 2750000000000;
+        console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
         // based on https://etherscan.io/tx/0xac7df37a43fab1b130318bbb761861b8357650db2e2c6493b73d6da3d9581077
@@ -296,7 +297,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=191111111111;
+        uint112 repay1=251111111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /*(uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
