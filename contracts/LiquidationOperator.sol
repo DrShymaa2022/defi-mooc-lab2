@@ -261,7 +261,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 2750000000000;
+        uint256 debtToCoverUSDT = 2950000000000;
         console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
@@ -297,7 +297,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amount1,
         bytes calldata
     ) external override {
-        uint112 repay1=251111111111;
+        uint112 repay1=291111111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /*(uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -387,7 +387,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         path[1] = address(WETH);
         ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();
-        uint256 amountIn = getAmountIn(amount1, w_btc, w_eth);
+        uint256 amountIn = getAmountIn( WBTC.balanceOf(address(this)), w_btc, w_eth);
         console.log("amountIn=",amountIn);  //this is what I will payback to uniswap, it could be larger with less profit If I borrowed extra money originally, this will cause extra unnecessary 3/1000 pool fee that may affect my profit
         router.swapTokensForExactTokens(
             amountIn,
