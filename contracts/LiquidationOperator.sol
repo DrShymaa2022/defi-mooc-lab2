@@ -256,12 +256,16 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         console.log("Liquidation Threshold = %d", LqThrshld);
         console.log("LTV= ", ltv);
+        uint256 max=Collateral_ETH- LqThrshld;
+        max= max/2;
+        console.log("max to be liquidated in 1 step= (Collateral_ETH- LqThrshld)/2 =", max);
+        console.log("So, we succeeded in acheiving more liquidated value by 2 steps if the final Collateral_ETH was less than <",Collateral_ETH- max);
         collateral_diff=Collateral_ETH;
         debt_diff=Debt_ETH;
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 2990000000000;
+        uint256 debtToCoverUSDT = 2921000000000;
         console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
@@ -311,7 +315,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         console.log("  WETH=",WETH.balanceOf(address(this)));
        
-       uint112 repay1=321111111111;
+       uint112 repay1=341111111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /*(uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
