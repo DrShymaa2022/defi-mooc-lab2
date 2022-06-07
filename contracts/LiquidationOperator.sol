@@ -279,17 +279,20 @@ contract LiquidationOperator is IUniswapV2Callee {
         path[1] = address(WETH);
         router.swapExactTokensForETH(balance, 0, path, msg.sender, block_num);
         console.log("Balances after swap for exact token:");
-        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=", WETH.balanceOf(address(this)));
 
         uint256 balanceWETH = WETH.balanceOf(address(this)); //I think this means the router already transfered the balance from this to WBTC
         WETH.withdraw(balanceWETH);
         console.log("Balances after withdraw:");
-        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=",WETH.balanceOf(address(this)));
 
         // 3. Convert the profit into ETH and send back to sender
         payable(msg.sender).transfer(balanceWETH);
         console.log("Balances after payable transfer:");
-        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=",WETH.balanceOf(address(this)));
         
         /* balanceWETH = WETH.balanceOf(address(this));
         console.log("balanceWETH=", balanceWETH); */
@@ -305,7 +308,8 @@ contract LiquidationOperator is IUniswapV2Callee {
     ) external override {
        
         console.log("Balances before liquidation:");
-        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=",WETH.balanceOf(address(this)));
        
        uint112 repay1=321111111111;
        
@@ -328,7 +332,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 balance = WBTC.balanceOf(address(WBTC));
         //console.log("After the 1st step we liquidated by now", balance, "WBTC");
         console.log("Balances after 1st step:");
-        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=",WETH.balanceOf(address(this)));
 
         {  //checking the result of the 1st liquidation step
         // healthFactor already defined as global
@@ -364,7 +369,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         balance = WBTC.balanceOf(address(WBTC));
         console.log("      ");
         console.log("Balances after 2nd step:");
-        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=",WETH.balanceOf(address(this)));
         
         {  //checking the result of the 2nd liquidation step
         
@@ -408,7 +414,8 @@ contract LiquidationOperator is IUniswapV2Callee {
             block_num
         );
         console.log("Balances after routing:");
-        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)), "  WETH=",WETH.balanceOf(address(this)));
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=",WETH.balanceOf(address(this)));
         console.log("-------------------------------------------------------------------------");
     }
 }
