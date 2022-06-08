@@ -266,7 +266,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 2916800000000;
+        uint256 debtToCoverUSDT = 2916800000000 - 421777990;
         console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
@@ -416,7 +416,7 @@ contract LiquidationOperator is IUniswapV2Callee {
        //now routing
        
         balance= USDT.balanceOf(address(this));
-        if(balance >0){
+        /*if(balance >0){
         console.log("we still have some USDT tokens that remained from the loan, we will pay from them first");
         USDT.approve(address(router), 2**256 - 1);
         address[] memory path = new address[](2);
@@ -427,11 +427,12 @@ contract LiquidationOperator is IUniswapV2Callee {
         uint256 amountIn = getAmountIn( balance, w_btc, w_eth);
         uint256 amountOut = getAmountOut(amountIn, w_btc, w_eth);
         console.log("amountIn=",amountIn, "amountOut=", amountOut);  
+        
         router.swapExactTokensForETH(amountIn, amountOut, path, msg.sender, block_num);
         console.log("after swap:");
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         console.log("  WETH=",WETH.balanceOf(address(this))); 
-        } 
+        } */
        
        
        
