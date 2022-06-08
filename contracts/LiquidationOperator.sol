@@ -266,7 +266,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 2921000000000;
+        uint256 debtToCoverUSDT = 2917000000000;
         console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
@@ -425,6 +425,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();
         uint256 amountIn = getAmountIn( balance, w_btc, w_eth);
+        
         console.log("amountIn=",amountIn);  
         router.swapExactTokensForETH(amountIn, 2**256 - 1, path, msg.sender, block_num);
         console.log("after swap:");
@@ -440,7 +441,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         path[1] = address(WETH);
         ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
             .getReserves();
-        uint256 amountIn = getAmountIn( amount1, w_btc, w_eth);
+        uint256 amountIn = getAmountIn( amount1-balance, w_btc, w_eth);
         console.log("amountIn=",amountIn);  //this is what I will payback to uniswap, it could be larger with less profit If I borrowed extra money originally, this will cause extra unnecessary 3/1000 pool fee that may affect my profit
         router.swapTokensForExactTokens(
             amountIn,
