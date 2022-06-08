@@ -266,7 +266,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         
 
         // Fine-tuned value. Should be greater than closing factor, but not too much...
-        uint256 debtToCoverUSDT = 2910000000000;
+        uint256 debtToCoverUSDT = 2921000000000;
         console.log("this run was with flashloan value=",debtToCoverUSDT);
 
         // 2. call flash swap to liquidate the target user
@@ -299,6 +299,9 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         //we have to convert any remaining USD to ETH too, maybe possible inside the flashloan?
         
+        balance=USDT.balanceOf(address(this));
+        if(balance >0){
+        console.log("we still have some USDT tokens that remained from the loan, since we payed it all from WBTC those should be transferred and added to our profit");
         path[0] = address(USDT);
         path[1] = address(WETH);
         router.swapExactTokensForETH(USDT.balanceOf(address(this)), 0, path, msg.sender, block_num);
@@ -306,7 +309,8 @@ contract LiquidationOperator is IUniswapV2Callee {
         payable(msg.sender).transfer(0);
         console.log("Balances after routing remaining USDT to ETH:");
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
-        console.log("  WETH=",WETH.balanceOf(address(this)));       
+        console.log("  WETH=",WETH.balanceOf(address(this))); 
+        }
     }
 
     // required by the swap
@@ -321,7 +325,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         console.log("  WETH=",WETH.balanceOf(address(this)));
        
-       uint112 repay1=391111111111;
+       uint112 repay1=392111111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /*(uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
