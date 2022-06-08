@@ -299,18 +299,20 @@ contract LiquidationOperator is IUniswapV2Callee {
         
         //we have to convert any remaining USD to ETH too, maybe possible inside the flashloan?
         
-        balance=USDT.balanceOf(address(this));
+        /*balance=USDT.balanceOf(address(this));
         if(balance >0){
         console.log("we still have some USDT tokens that remained from the loan, since we payed it all from WBTC those should be transferred and added to our profit");
         path[0] = address(USDT);
         path[1] = address(WETH);
         router.swapExactTokensForETH(USDT.balanceOf(address(this)), 0, path, msg.sender, block_num);
+        console.log("after swap: WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         WETH.withdraw(0);
+        console.log("after withdraw: WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         payable(msg.sender).transfer(0);
         console.log("Balances after routing remaining USDT to ETH:");
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         console.log("  WETH=",WETH.balanceOf(address(this))); 
-        }
+        }*/
     }
 
     // required by the swap
@@ -325,7 +327,7 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
         console.log("  WETH=",WETH.balanceOf(address(this)));
        
-       uint112 repay1=392111111111;
+       uint112 repay1=393111111111;
        
        // these 3 lines I need when I comment the 2 liquidation steps part and get back to 1 step
        /*(uint112 w_btc, uint112 w_eth, ) = IUniswapV2Pair(msg.sender)
@@ -412,6 +414,26 @@ contract LiquidationOperator is IUniswapV2Callee {
         console.log("The difference between the two, is what we gained as a liquidator before reducing the pool ratio=", gain/1e18,"ETH");
        
        //now routing
+       
+        balance= USDT.balanceOf(address(this));
+        if(balance >0){
+        console.log("we still have some USDT tokens that remained from the loan, we will pay from them first");
+        USDT.approve(address(router), 2**256 - 1);
+        address[] memory path = new address[](2);
+        path[0] = address(USDT);
+        path[1] = address(WETH);
+        ( w_btc,  w_eth, ) = IUniswapV2Pair(msg.sender)
+            .getReserves();
+        uint256 amountIn = getAmountIn( balance, w_btc, w_eth);
+        console.log("amountIn=",amountIn);  
+        router.swapExactTokensForETH(amountIn, 2**256 - 1, path, msg.sender, block_num);
+        console.log("after swap:");
+        console.log(" WBTC=", WBTC.balanceOf(address(this)), "   USDT=",USDT.balanceOf(address(this)));
+        console.log("  WETH=",WETH.balanceOf(address(this))); 
+        } 
+       
+       
+       
         WBTC.approve(address(router), 2**256 - 1);
         address[] memory path = new address[](2);
         path[0] = address(WBTC);
